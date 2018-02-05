@@ -24,15 +24,15 @@ public class Apriori extends javax.swing.JFrame {
     public static Connection connection;
     final private String ENDPOINT = "sql9.freesqldatabase.com";
     final private String PORTNUMBER = "3306";
-    final private String USERNAME = "sql9209681";
-    final private String PASSWORD = "kav5ZiUYJw";    
+    final private String USERNAME = "ale";
+    final private String PASSWORD = "Computer123#";    
     
     public Statement statement;
     public PreparedStatement prep_statement;
     public ResultSet resultSet;
     
     public static ArrayList <String> inventory = new ArrayList <String>();  // contains a list of all items from inventory    
-    public static HashMap <Integer, String[]> transactionMap = new HashMap <Integer, String[]> ();
+    public static HashMap <Integer, ArrayList> transactionMap = new HashMap <Integer, ArrayList> ();
     // this hash map contains the transaction id (String) as key, and the ordered items in an String array
     /******
      +------------------------------+
@@ -49,10 +49,7 @@ public class Apriori extends javax.swing.JFrame {
     //public final int totalTransaction;  // total number of transactions accross all databases
     //public final int minTransaction;    // the minimum number of transactions needed to satisfy
                                         //  support percentage
-    
-    
-    
-    
+   
     /**
      * Creates new form Apriori
      */
@@ -237,28 +234,38 @@ public class Apriori extends javax.swing.JFrame {
         support = Integer.parseInt(inputSupport.getText().trim());
         confidence = Integer.parseInt(inputConfidence.getText().trim());
         
-        
-        
     }//GEN-LAST:event_runBttnActionPerformed
 
     /**
-     * 
-     * @param map
-     * @return 
+     * Generate frequent item sets from a HashMap(transactionID, ArrayList of purchased items)
+     * @param map the HashMap
+     * @return The frequent item sets. HashMap(item sets, number of appearing)
      */
-    private Object[][] calculateSupport(HashMap map)
+    private HashMap generateFrequentItemSets(HashMap map)
     {
-        Object [][] itemSet = new Object [10][2];
+        HashMap <String, Integer> itemSets = new HashMap();
         
+        // iterate through a master list of transaction
         for(Object obj : map.values())
         {
-            String item = obj.toString().trim();
+            // a list of purchased items from 1 transaction            
+            ArrayList <String> purchasedItems = (ArrayList <String>) obj; 
             
-            itemSet[inventory.indexOf(item)][0] = item; // set the item
-                
-        }
-        
-        return itemSet;        
+            // iterate through each item from a transaction
+            for(String item : purchasedItems)
+            {
+                if(itemSets.containsKey(item))   // if item already exists
+                {
+                    // increase count by one
+                    itemSets.put(item, itemSets.get(item) + 1);
+                }
+                else    // item is not in this list yet
+                {
+                    itemSets.put(item, 1);
+                }
+            } 
+        } 
+        return itemSets;
     }
     
     
