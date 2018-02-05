@@ -22,7 +22,13 @@ import java.util.*;
 public class Apriori extends javax.swing.JFrame {
 
     public static Connection connection;
-    final private String ENDPOINT = "sql9.freesqldatabase.com";
+    
+    final private String ENDPOINT1 = "alestore1.cxuvb3hzawez.us-east-1.rds.amazonaws.com";
+    final private String ENDPOINT2 = "alestore2.cxuvb3hzawez.us-east-1.rds.amazonaws.com";
+    final private String ENDPOINT3 = "alestore3.cxuvb3hzawez.us-east-1.rds.amazonaws.com";
+    final private String ENDPOINT4 = "alestore4.cxuvb3hzawez.us-east-1.rds.amazonaws.com";
+    final private String ENDPOINT5 = "alestore5.cxuvb3hzawez.us-east-1.rds.amazonaws.com";
+    
     final private String PORTNUMBER = "3306";
     final private String USERNAME = "ale";
     final private String PASSWORD = "Computer123#";    
@@ -214,7 +220,7 @@ public class Apriori extends javax.swing.JFrame {
 
     private void connectBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectBttnActionPerformed
         loadDriver();   // load the mysql driver
-        connectToDatabase();    // connect to database
+        connectToDatabase(ENDPOINT1);    // connect to database
         
         status.setText("Connected successfully.");  // confirmation
         
@@ -286,10 +292,10 @@ public class Apriori extends javax.swing.JFrame {
     /**
      * Connect to the database
      */
-    public void connectToDatabase() {
+    public void connectToDatabase(String endpoint) {
         try {
             //connect = DriverManager.getConnection(url + "?user=" + db_username + "&password=" + db_password);
-            connection = DriverManager.getConnection("jdbc:mysql://" + ENDPOINT + ":" + PORTNUMBER + 
+            connection = DriverManager.getConnection("jdbc:mysql://" + endpoint + ":" + PORTNUMBER + 
                                                     "/sql9209681?user=" + USERNAME + "&password=" + PASSWORD);
             
             statement = connection.createStatement();
