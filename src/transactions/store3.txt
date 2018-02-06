@@ -1,0 +1,10 @@
+peanuts, milk
+soda, chocolate, kitkat
+sneakers, water, beer
+yogurt, milk, peanuts
+popsicle, yogurt, milk
+peanuts, water, yogurt
+popsicle, water
+soda, sneakers, water
+yogurt, kitkat
+milk, yogurt, popsicle
