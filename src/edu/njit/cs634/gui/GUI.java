@@ -5,7 +5,6 @@
  */
 package edu.njit.cs634.gui;
 
-import edu.njit.cs634.helper.FrequentItemSetData;
 import java.awt.Component;
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,6 +13,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -31,15 +31,20 @@ public class GUI extends javax.swing.JFrame {
                                         //  support percentage
    
     private final Component frame = null;
-    private double minSupport, minConfidence;
-    private List<Set<String>> itemSetList = new ArrayList<>();
-    private FrequentItemSetData<String> data;
+    private double minSupport, minConfidence, minSupportCount;
+    private int numOfTransactions, maxItemSetSize, currentSetSize;
+    private List<ArrayList> transactionList = new ArrayList<>();
+    private HashMap <ArrayList, Integer> itemsFrequency;
     
     /**
      * Creates new form Apriori
      */
     public GUI() {
         initComponents();
+        
+        numOfTransactions = 0;
+        maxItemSetSize = 0;
+        currentSetSize = 0;
     }
 
     /**
@@ -62,11 +67,16 @@ public class GUI extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JSeparator();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        transactionsTextArea = new javax.swing.JTextArea();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        resultTextArea = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        minSupportCountText = new javax.swing.JLabel();
+        resetBttn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -82,37 +92,42 @@ public class GUI extends javax.swing.JFrame {
         });
 
         runBttn.setText("Run Apriori Algorithm");
-        runBttn.setEnabled(false);
         runBttn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runBttnActionPerformed(evt);
             }
         });
 
-        jLabel3.setText("Support (0<support<1):");
+        jLabel3.setText("Support %:");
 
-        inputSupport.setEditable(false);
+        jLabel4.setText("Confidence %:");
 
-        jLabel4.setText("Confidence (0<confidence<1):");
-
-        inputConfidence.setEditable(false);
+        transactionsTextArea.setColumns(20);
+        transactionsTextArea.setRows(5);
+        jScrollPane2.setViewportView(transactionsTextArea);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 634, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 275, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("Transactions", jPanel1);
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        resultTextArea.setColumns(20);
+        resultTextArea.setRows(5);
+        jScrollPane1.setViewportView(resultTextArea);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -120,61 +135,81 @@ public class GUI extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 614, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         jTabbedPane1.addTab("Results", jPanel2);
 
-        jLabel2.setText("File Directory:");
+        jLabel2.setText("Files:");
 
         jTextField1.setEditable(false);
+        jTextField1.setAutoscrolls(false);
+        jTextField1.setMaximumSize(new java.awt.Dimension(294, 23));
+
+        jLabel5.setText("Min. Support Count = ");
+
+        minSupportCountText.setText(" ");
+
+        resetBttn.setText("RESET");
+        resetBttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetBttnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jSeparator1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(204, 204, 204)
-                        .addComponent(jLabel1)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSeparator2)
+                    .addComponent(jSeparator1)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(inputSupport, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(inputConfidence, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField1)))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(runBttn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(browseBttn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jSeparator2))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jTabbedPane1)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jTabbedPane1)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jLabel5)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(minSupportCountText, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(jLabel3)
+                                                    .addComponent(jLabel2))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                    .addGroup(layout.createSequentialGroup()
+                                                        .addComponent(inputSupport, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addGap(18, 18, 18)
+                                                        .addComponent(jLabel4)
+                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addComponent(inputConfidence, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                        .addGap(18, 18, 18)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(resetBttn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(runBttn)
+                                                .addGap(0, 0, Short.MAX_VALUE))
+                                            .addComponent(browseBttn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jLabel1)))
+                        .addGap(10, 10, 10)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -184,22 +219,32 @@ public class GUI extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(browseBttn)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(runBttn))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(7, 7, 7)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(inputSupport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4)
+                            .addComponent(inputConfidence, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(browseBttn)
-                    .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(runBttn)
-                    .addComponent(jLabel3)
-                    .addComponent(inputSupport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4)
-                    .addComponent(inputConfidence, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel5)
+                        .addComponent(minSupportCountText))
+                    .addComponent(resetBttn))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane1)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -207,43 +252,162 @@ public class GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void browseBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseBttnActionPerformed
-        // enable input fields and button
-        inputSupport.setEnabled(true);
-        inputConfidence.setEnabled(true);
-        runBttn.setEnabled(true);
-        browseBttn.setEnabled(false);
-        
         fileChooser.showOpenDialog(frame);
         files = fileChooser.getSelectedFiles();
+        numOfTransactions = 0;
+        itemsFrequency = new HashMap <ArrayList, Integer> ();
+        readTransactions(); // read all transactions
         
-        readTransactions();
+        browseBttn.setEnabled(false);
+        runBttn.setEnabled(true);
     }//GEN-LAST:event_browseBttnActionPerformed
 
     private void runBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runBttnActionPerformed
         // get data
-        minSupport = Double.parseDouble(inputSupport.getText().trim());
-        minConfidence = Double.parseDouble(inputConfidence.getText().trim());       
+        minSupport = checkInputValues(inputSupport.getText().trim());
+        minConfidence = checkInputValues(inputConfidence.getText().trim());      
+        minSupportCount = minSupport/100*numOfTransactions;
         
-        checkInputValues(minSupport);
+        minSupportCountText.setText(minSupportCount + "");  // set text
+        
+        generateInitialItemSets(itemsFrequency, minSupportCount, maxItemSetSize);
+        
+        
+        runBttn.setEnabled(false);
     }//GEN-LAST:event_runBttnActionPerformed
 
+    private void resetBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBttnActionPerformed
+        browseBttn.setEnabled(true);
+        runBttn.setEnabled(false);
+        inputSupport.setText("");
+        inputConfidence.setText("");
+        jTextField1.setText("");
+        transactionsTextArea.setText("");
+        resultTextArea.setText("");
+        minSupportCountText.setText("");
+    }//GEN-LAST:event_resetBttnActionPerformed
+
+    private void generateInitialItemSets(HashMap <ArrayList, Integer> map, double minSupportCount, int maxItemSetSize)
+    {        
+        do
+        {
+            if(currentSetSize == 0)
+            {
+                resultTextArea.append("Scanned performed: \n");
+                HashMap <String, Integer> _return = new HashMap <String, Integer> ();
+
+                for(Map.Entry me : map.entrySet())
+                {
+                    int freq = (int) me.getValue();
+                    if(freq >= minSupportCount)
+                    {
+                        _return.put(me.getKey().toString(), freq);
+                        resultTextArea.append("{" + me.getKey().toString() + "}\t-\t" + freq + "\n");
+                    }
+                    else
+                    {
+
+                    }         
+                }                
+                resultTextArea.append("\n");
+                currentSetSize ++;
+            }
+            else
+            {
+                resultTextArea.append("Scanned performed: \n");
+                HashMap <HashSet<String>, Integer> newItemSet = new HashMap <HashSet<String>, Integer> ();
+                
+
+                // Generate new itemSet
+                for(Map.Entry me1 : map.entrySet())
+                {
+                    String item1 = me1.getKey().toString();
+                    String item2 = "";
+                    
+                    int index = 0;
+                    int size = map.size();
+                    for(Map.Entry me2 : map.entrySet())
+                    {                               
+                        HashSet <String> set = new HashSet <String> ();
+                        
+                        if(index == 0);
+                        
+                        else if(index > 0 && index <= size)
+                        {
+                            item2 = me2.getKey().toString();   
+                            set.add(item1);
+                            set.add(item2);   
+                            newItemSet.put(set, 0);                         
+                        }
+                    } 
+                    index++;
+                }
+                    
+                // calculate the frequency
+                for(Map.Entry me : newItemSet.entrySet())
+                {
+                    HashSet newSet = (HashSet) me.getKey();
+                    
+                    for(int index = 0; index < transactionList.size(); index++)
+                    {
+                        
+                    }
+                    
+                }
+                
+                
+            }
+            currentSetSize ++;
+        }while(currentSetSize <= maxItemSetSize);
+    }
+    
+    
+    
+    
     /**
      * Read all transactions from the selected files
      */
     private void readTransactions()
     {
-        try {
+        maxItemSetSize = 0;
+        
+        String temp = "";
+        try {            
             for(File f : files)
             {
                 String filePath = f.getAbsolutePath();
+                transactionsTextArea.append("File: " + filePath + "\n");
+                temp += filePath + "; ";
                 
                 BufferedReader transactions = new BufferedReader(new FileReader(filePath));
                 while (transactions.ready()) 
                 {
                     String line = transactions.readLine();
-                    itemSetList.add(new HashSet<>(Arrays.asList(line.split(" "))));
-                }
+                    ArrayList transactionArray = new ArrayList();  
+                    transactionArray.add(Arrays.asList(line.replace(" ", "").split(",")));
+                    
+                    transactionList.add(transactionArray);
+                    
+                    if(transactionArray.size() >= maxItemSetSize)
+                        maxItemSetSize = transactionArray.size();
+                    
+                    for(Object obj : transactionArray)
+                    {
+                        String item = obj.toString();
+                        
+                        if(itemsFrequency.containsKey(item)) // increase count by 1
+                            itemsFrequency.put(item, itemsFrequency.get(item) + 1);
+                        else
+                            itemsFrequency.put(item ,1);
+                    }
+                    
+                    transactionsTextArea.append(line + "\n");  
+                    numOfTransactions++;
+               }
+                transactionsTextArea.append("\n");
             }
+            
+            jTextField1.setText(temp);
         } catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -254,15 +418,26 @@ public class GUI extends javax.swing.JFrame {
      * Values must be between 0 and 1
      * @param input the user's input
      */
-    private void checkInputValues(double input) {
-        if (Double.isNaN(input)) {
-            throw new IllegalArgumentException("The input support is NaN.");
-        }
+    private double checkInputValues(String input) {
+        try
+        {
+            Integer.parseInt(input);
+            
+            if (Double.isNaN(Double.parseDouble(input))) {
+                throw new IllegalArgumentException("The input support is not a number.");
+            }
 
-        if (input > 1.0 || input < 0.0) {
-            throw new IllegalArgumentException(
-                    "The support should be between 0 and 1.");
+            if (Double.parseDouble(input) > 100 || Double.parseDouble(input) < 0) {
+                throw new IllegalArgumentException(
+                        "The support should be between 0 and 100.");
+            }
         }
+        catch (NumberFormatException ex)
+        {
+            JOptionPane.showMessageDialog(this, "Invalid input. You entered: " + input + ".\nYou must enter a number",
+                                            "WARNING", JOptionPane.WARNING_MESSAGE);
+        }   
+        return Double.parseDouble(input);
     }
     
     /**
@@ -282,13 +457,13 @@ public class GUI extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Apriori.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Apriori.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Apriori.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Apriori.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -308,14 +483,19 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel minSupportCountText;
+    private javax.swing.JButton resetBttn;
+    private javax.swing.JTextArea resultTextArea;
     private javax.swing.JButton runBttn;
+    private javax.swing.JTextArea transactionsTextArea;
     // End of variables declaration//GEN-END:variables
 }
