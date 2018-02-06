@@ -5,61 +5,40 @@
  */
 package edu.njit.cs634.gui;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import edu.njit.cs634.helper.FrequentItemSetData;
+import java.awt.Component;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.*;
 
 /**
  *
  * @author Ashley Le
  */
-public class Apriori extends javax.swing.JFrame {
-
-    public static Connection connection;
-    
-    final private String ENDPOINT1 = "alestore1.cxuvb3hzawez.us-east-1.rds.amazonaws.com";
-    final private String ENDPOINT2 = "alestore2.cxuvb3hzawez.us-east-1.rds.amazonaws.com";
-    final private String ENDPOINT3 = "alestore3.cxuvb3hzawez.us-east-1.rds.amazonaws.com";
-    final private String ENDPOINT4 = "alestore4.cxuvb3hzawez.us-east-1.rds.amazonaws.com";
-    final private String ENDPOINT5 = "alestore5.cxuvb3hzawez.us-east-1.rds.amazonaws.com";
-    
-    final private String PORTNUMBER = "3306";
-    final private String USERNAME = "ale";
-    final private String PASSWORD = "Computer123#";    
-    
-    public Statement statement;
-    public PreparedStatement prep_statement;
-    public ResultSet resultSet;
+public class GUI extends javax.swing.JFrame {
     
     public static ArrayList <String> inventory = new ArrayList <String>();  // contains a list of all items from inventory    
     public static HashMap <Integer, ArrayList> transactionMap = new HashMap <Integer, ArrayList> ();
-    // this hash map contains the transaction id (String) as key, and the ordered items in an String array
-    /******
-     +------------------------------+
-     |  Transaction id  |   items   |
-     +------------------------------+
-     | DB1              | {A, B, C} |   
-     | DB2              | {B, E}    |
-     | ...              | ...       |
-     +------------------------------+
-     */
-    
-    public static int support = 0;
-    public static int confidence = 0;
+
+    public static final Chooser fileChooser = new Chooser();
+    public static File[] files;
     //public final int totalTransaction;  // total number of transactions accross all databases
     //public final int minTransaction;    // the minimum number of transactions needed to satisfy
                                         //  support percentage
    
+    private final Component frame = null;
+    private double minSupport, minConfidence;
+    private List<Set<String>> itemSetList = new ArrayList<>();
+    private FrequentItemSetData<String> data;
+    
     /**
      * Creates new form Apriori
      */
-    public Apriori() {
+    public GUI() {
         initComponents();
     }
 
@@ -74,8 +53,7 @@ public class Apriori extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        connectBttn = new javax.swing.JToggleButton();
-        status = new javax.swing.JLabel();
+        browseBttn = new javax.swing.JToggleButton();
         runBttn = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         inputSupport = new javax.swing.JTextField();
@@ -87,6 +65,8 @@ public class Apriori extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
+        jLabel2 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -94,10 +74,10 @@ public class Apriori extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Apriori Algorithm");
 
-        connectBttn.setText("Connect to DB & Retrieve Data");
-        connectBttn.addActionListener(new java.awt.event.ActionListener() {
+        browseBttn.setText("Browse Files...");
+        browseBttn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                connectBttnActionPerformed(evt);
+                browseBttnActionPerformed(evt);
             }
         });
 
@@ -109,11 +89,11 @@ public class Apriori extends javax.swing.JFrame {
             }
         });
 
-        jLabel3.setText("Support %:");
+        jLabel3.setText("Support (0<support<1):");
 
         inputSupport.setEditable(false);
 
-        jLabel4.setText("Confidence %:");
+        jLabel4.setText("Confidence (0<confidence<1):");
 
         inputConfidence.setEditable(false);
 
@@ -121,7 +101,7 @@ public class Apriori extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 575, Short.MAX_VALUE)
+            .addGap(0, 634, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -140,7 +120,7 @@ public class Apriori extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 614, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -152,6 +132,10 @@ public class Apriori extends javax.swing.JFrame {
         );
 
         jTabbedPane1.addTab("Results", jPanel2);
+
+        jLabel2.setText("File Directory:");
+
+        jTextField1.setEditable(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -169,7 +153,6 @@ public class Apriori extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(status, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -177,11 +160,15 @@ public class Apriori extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(inputConfidence, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(inputConfidence, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextField1)))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(runBttn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(connectBttn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(browseBttn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jSeparator2))
@@ -199,8 +186,9 @@ public class Apriori extends javax.swing.JFrame {
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(connectBttn)
-                    .addComponent(status, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(browseBttn)
+                    .addComponent(jLabel2)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(runBttn)
@@ -218,93 +206,64 @@ public class Apriori extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void connectBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectBttnActionPerformed
-        loadDriver();   // load the mysql driver
-        connectToDatabase(ENDPOINT1);    // connect to database
-        
-        status.setText("Connected successfully.");  // confirmation
-        
-        // get table from db
-        
-        // insert data into hashmap
-        
+    private void browseBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseBttnActionPerformed
         // enable input fields and button
         inputSupport.setEnabled(true);
         inputConfidence.setEnabled(true);
         runBttn.setEnabled(true);
-        connectBttn.setEnabled(false);
-    }//GEN-LAST:event_connectBttnActionPerformed
+        browseBttn.setEnabled(false);
+        
+        fileChooser.showOpenDialog(frame);
+        files = fileChooser.getSelectedFiles();
+        
+        readTransactions();
+    }//GEN-LAST:event_browseBttnActionPerformed
 
     private void runBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runBttnActionPerformed
         // get data
-        support = Integer.parseInt(inputSupport.getText().trim());
-        confidence = Integer.parseInt(inputConfidence.getText().trim());
+        minSupport = Double.parseDouble(inputSupport.getText().trim());
+        minConfidence = Double.parseDouble(inputConfidence.getText().trim());       
         
+        checkInputValues(minSupport);
     }//GEN-LAST:event_runBttnActionPerformed
 
     /**
-     * Generate frequent item sets from a HashMap(transactionID, ArrayList of purchased items)
-     * @param map the HashMap
-     * @return The frequent item sets. HashMap(item sets, number of appearing)
+     * Read all transactions from the selected files
      */
-    private HashMap generateFrequentItemSets(HashMap map)
+    private void readTransactions()
     {
-        HashMap <String, Integer> itemSets = new HashMap();
-        
-        // iterate through a master list of transaction
-        for(Object obj : map.values())
-        {
-            // a list of purchased items from 1 transaction            
-            ArrayList <String> purchasedItems = (ArrayList <String>) obj; 
-            
-            // iterate through each item from a transaction
-            for(String item : purchasedItems)
+        try {
+            for(File f : files)
             {
-                if(itemSets.containsKey(item))   // if item already exists
+                String filePath = f.getAbsolutePath();
+                
+                BufferedReader transactions = new BufferedReader(new FileReader(filePath));
+                while (transactions.ready()) 
                 {
-                    // increase count by one
-                    itemSets.put(item, itemSets.get(item) + 1);
+                    String line = transactions.readLine();
+                    itemSetList.add(new HashSet<>(Arrays.asList(line.split(" "))));
                 }
-                else    // item is not in this list yet
-                {
-                    itemSets.put(item, 1);
-                }
-            } 
-        } 
-        return itemSets;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
-    
     /**
-     * Load mysql driver to this program
+     * Check the user's input value
+     * Values must be between 0 and 1
+     * @param input the user's input
      */
-    public void loadDriver() {      
-        try {
-            // The newInstance() call is a work around for some
-            // broken Java implementations
+    private void checkInputValues(double input) {
+        if (Double.isNaN(input)) {
+            throw new IllegalArgumentException("The input support is NaN.");
+        }
 
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            Logger.getLogger(Apriori.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        if (input > 1.0 || input < 0.0) {
+            throw new IllegalArgumentException(
+                    "The support should be between 0 and 1.");
+        }
     }
-    
-    /**
-     * Connect to the database
-     */
-    public void connectToDatabase(String endpoint) {
-        try {
-            //connect = DriverManager.getConnection(url + "?user=" + db_username + "&password=" + db_password);
-            connection = DriverManager.getConnection("jdbc:mysql://" + endpoint + ":" + PORTNUMBER + 
-                                                    "/sql9209681?user=" + USERNAME + "&password=" + PASSWORD);
-            
-            statement = connection.createStatement();
-            
-        } catch (SQLException ex) {
-            Logger.getLogger(Apriori.class.getName()).log(Level.SEVERE, null, ex);
-        }        
-    }
-    
     
     /**
      * @param args the command line arguments
@@ -336,16 +295,17 @@ public class Apriori extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Apriori().setVisible(true);
+                new GUI().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JToggleButton connectBttn;
+    private javax.swing.JToggleButton browseBttn;
     private javax.swing.JTextField inputConfidence;
     private javax.swing.JTextField inputSupport;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
@@ -355,7 +315,7 @@ public class Apriori extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextField jTextField1;
     private javax.swing.JButton runBttn;
-    private javax.swing.JLabel status;
     // End of variables declaration//GEN-END:variables
 }
