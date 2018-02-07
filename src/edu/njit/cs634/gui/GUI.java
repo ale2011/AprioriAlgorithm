@@ -31,8 +31,8 @@ public class GUI extends javax.swing.JFrame {
     private HashMap <String, Integer> ITEM_SET = new HashMap();
     
     private final Component frame = null;
-    private double SUPPORT, CONFIDENCE; // store user's input
-    private int TOTAL_TRANSACTIONS, MAX_ITEMS;
+    private int SUPPORT, CONFIDENCE; // store user's input
+    private int TOTAL_TRANSACTIONS, MAX_ITEMS, MIN_SUPPORT_COUNT;
     
     /**
      * Creates new form Apriori
@@ -65,6 +65,9 @@ public class GUI extends javax.swing.JFrame {
         transactionsTextArea = new javax.swing.JTextArea();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
+        logTextArea = new javax.swing.JTextArea();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
         resultTextArea = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
         fileTextField = new javax.swing.JTextField();
@@ -123,9 +126,9 @@ public class GUI extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Transactions", jPanel1);
 
-        resultTextArea.setColumns(20);
-        resultTextArea.setRows(5);
-        jScrollPane1.setViewportView(resultTextArea);
+        logTextArea.setColumns(20);
+        logTextArea.setRows(5);
+        jScrollPane1.setViewportView(logTextArea);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -144,7 +147,30 @@ public class GUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("Results", jPanel2);
+        jTabbedPane1.addTab("Logs", jPanel2);
+
+        resultTextArea.setColumns(20);
+        resultTextArea.setRows(5);
+        jScrollPane3.setViewportView(resultTextArea);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("Results", jPanel3);
 
         jLabel2.setText("Files:");
 
@@ -252,6 +278,8 @@ public class GUI extends javax.swing.JFrame {
     private void browseBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseBttnActionPerformed
         fileChooser.showOpenDialog(frame);
         files = fileChooser.getSelectedFiles();
+        
+        TOTAL_TRANSACTIONS = 0;
               
     }//GEN-LAST:event_browseBttnActionPerformed
 
@@ -263,12 +291,14 @@ public class GUI extends javax.swing.JFrame {
         CONFIDENCE = checkInputValues(inputConfidence.getText());
         
         // initialize 
-        TRANSACTIONS_LIST.clear();   
-        TOTAL_TRANSACTIONS = 0;
+        TRANSACTIONS_LIST.clear(); 
         MAX_ITEMS = 0;
         
         readTransactions(); // read all transactions  
-        prunningProcess(TRANSACTIONS_LIST, SUPPORT);
+        MIN_SUPPORT_COUNT = TOTAL_TRANSACTIONS * SUPPORT/100;
+        minSupportCountText.setText(MIN_SUPPORT_COUNT + "");                
+        
+        prunningProcess(TRANSACTIONS_LIST, MIN_SUPPORT_COUNT);
     }//GEN-LAST:event_runBttnActionPerformed
 
     private void resetBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBttnActionPerformed
@@ -278,7 +308,7 @@ public class GUI extends javax.swing.JFrame {
         inputConfidence.setText("");
         fileTextField.setText("");
         transactionsTextArea.setText("");
-        resultTextArea.setText("");
+        logTextArea.setText("");
         minSupportCountText.setText("");
     }//GEN-LAST:event_resetBttnActionPerformed
       
@@ -287,17 +317,12 @@ public class GUI extends javax.swing.JFrame {
      * Values must be between 0 and 1
      * @param input the user's input
      */
-    private double checkInputValues(String input) {
+    private int checkInputValues(String input) {
         try
         {
             Integer.parseInt(input);
-            
-            if (Double.isNaN(Double.parseDouble(input))) {
-                JOptionPane.showMessageDialog(this, "Invalid input. You entered: " + input + ".\nYou must enter a number",
-                                            "WARNING", JOptionPane.WARNING_MESSAGE);
-            }
 
-            if (Double.parseDouble(input) > 100 || Double.parseDouble(input) < 0) {
+            if (Integer.parseInt(input) > 100 || Integer.parseInt(input) < 0) {
                 JOptionPane.showMessageDialog(this, "Invalid input. You entered: " + input + ".\nYou must enter a number between 0 and 100",
                                             "WARNING", JOptionPane.WARNING_MESSAGE);
             }
@@ -307,7 +332,7 @@ public class GUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Invalid input. You entered: " + input + ".\nYou must enter a number",
                                             "WARNING", JOptionPane.WARNING_MESSAGE);
         }   
-        return Double.parseDouble(input);
+        return Integer.parseInt(input);
     }    
     
     /**
@@ -336,6 +361,7 @@ public class GUI extends javax.swing.JFrame {
                     TRANSACTIONS_LIST.add(order);   // add this transaction to the master list
                     
                     TOTAL_TRANSACTIONS++;   // increase the count of the total transactions
+                    
                     if(line.split(",").length >= MAX_ITEMS)
                         MAX_ITEMS = line.split(",").length;
                     
@@ -349,9 +375,11 @@ public class GUI extends javax.swing.JFrame {
         }
     }
     
-    private void prunningProcess(ArrayList<List<String>> transactionsArray, double support_number)
+    private HashMap<String, Integer> prunningProcess(ArrayList<List<String>> transactionsArray, int support_number)
     {
-        resultTextArea.append("Prunning process started.");
+        HashMap <String, Integer> newItemSet = new HashMap();
+                
+        logTextArea.append("Prunning process started.\n");
         for(List <String> transaction : transactionsArray)
         {
             for(String item : transaction)  // an item or set of items
@@ -398,11 +426,30 @@ public class GUI extends javax.swing.JFrame {
             }
         }    
         
-        // Display
+        // Display log
         for(String itemSet : ITEM_SET.keySet())
         {
-            resultTextArea.append("{ " + itemSet +  " }\t-\t" + ITEM_SET.get(itemSet) + "\n") ;
+            logTextArea.append("{ " + itemSet +  " }\t-\t" + ITEM_SET.get(itemSet)) ;
+            
+            if(ITEM_SET.get(itemSet) >= support_number)
+            {
+                logTextArea.append("  ***\n");
+                newItemSet.put(itemSet, ITEM_SET.get(itemSet));
+            }
+            else
+                logTextArea.append("\n");
         }        
+        
+        // display in the result area
+        resultTextArea.append("=== New ItemSet === \n");
+        for(String itemSet : newItemSet.keySet())
+        {
+            resultTextArea.append("{ " + itemSet +  " }\t-\t" + ITEM_SET.get(itemSet) + "\n") ;
+        }
+        resultTextArea.append("\n");
+        
+        
+        return newItemSet;
     }
     
     /**
@@ -452,11 +499,14 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTextArea logTextArea;
     private javax.swing.JLabel minSupportCountText;
     private javax.swing.JButton resetBttn;
     private javax.swing.JTextArea resultTextArea;
