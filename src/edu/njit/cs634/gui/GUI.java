@@ -21,30 +21,24 @@ import javax.swing.JOptionPane;
  */
 public class GUI extends javax.swing.JFrame {
     
-    public static ArrayList <String> inventory = new ArrayList <String>();  // contains a list of all items from inventory    
-    public static HashMap <Integer, ArrayList> transactionMap = new HashMap <Integer, ArrayList> ();
-
-    public static final Chooser fileChooser = new Chooser();
-    public static File[] files;
+    public final Chooser fileChooser = new Chooser();
+    public File[] files;
     //public final int totalTransaction;  // total number of transactions accross all databases
     //public final int minTransaction;    // the minimum number of transactions needed to satisfy
                                         //  support percentage
-   
+    
+    private ArrayList <List<String>> TRANSACTIONS_LIST = new ArrayList ();
+    private HashMap <String, Integer> ITEM_SET = new HashMap();
+    
     private final Component frame = null;
-    private double minSupport, minConfidence, minSupportCount;
-    private int numOfTransactions, maxItemSetSize, currentSetSize;
-    private List<ArrayList> transactionList = new ArrayList<>();
-    private HashMap <ArrayList, Integer> itemsFrequency;
+    private double SUPPORT, CONFIDENCE; // store user's input
+    private int TOTAL_TRANSACTIONS, MAX_ITEMS;
     
     /**
      * Creates new form Apriori
      */
     public GUI() {
         initComponents();
-        
-        numOfTransactions = 0;
-        maxItemSetSize = 0;
-        currentSetSize = 0;
     }
 
     /**
@@ -73,7 +67,7 @@ public class GUI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         resultTextArea = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        fileTextField = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         minSupportCountText = new javax.swing.JLabel();
         resetBttn = new javax.swing.JButton();
@@ -100,7 +94,11 @@ public class GUI extends javax.swing.JFrame {
 
         jLabel3.setText("Support %:");
 
+        inputSupport.setText("20");
+
         jLabel4.setText("Confidence %:");
+
+        inputConfidence.setText("50");
 
         transactionsTextArea.setColumns(20);
         transactionsTextArea.setRows(5);
@@ -150,9 +148,9 @@ public class GUI extends javax.swing.JFrame {
 
         jLabel2.setText("Files:");
 
-        jTextField1.setEditable(false);
-        jTextField1.setAutoscrolls(false);
-        jTextField1.setMaximumSize(new java.awt.Dimension(294, 23));
+        fileTextField.setEditable(false);
+        fileTextField.setAutoscrolls(false);
+        fileTextField.setMaximumSize(new java.awt.Dimension(294, 23));
 
         jLabel5.setText("Min. Support Count = ");
 
@@ -180,18 +178,18 @@ public class GUI extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(jTabbedPane1)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                             .addGroup(layout.createSequentialGroup()
                                                 .addComponent(jLabel5)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(minSupportCountText, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(minSupportCountText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                             .addGroup(layout.createSequentialGroup()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                     .addComponent(jLabel3)
                                                     .addComponent(jLabel2))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                    .addComponent(fileTextField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                     .addGroup(layout.createSequentialGroup()
                                                         .addComponent(inputSupport, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                         .addGap(18, 18, 18)
@@ -223,7 +221,7 @@ public class GUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(browseBttn)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(fileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(runBttn))
                     .addGroup(layout.createSequentialGroup()
@@ -236,13 +234,13 @@ public class GUI extends javax.swing.JFrame {
                             .addComponent(jLabel4)
                             .addComponent(inputConfidence, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(resetBttn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel5)
-                        .addComponent(minSupportCountText))
-                    .addComponent(resetBttn))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(minSupportCountText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel5)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 5, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -254,165 +252,36 @@ public class GUI extends javax.swing.JFrame {
     private void browseBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseBttnActionPerformed
         fileChooser.showOpenDialog(frame);
         files = fileChooser.getSelectedFiles();
-        numOfTransactions = 0;
-        itemsFrequency = new HashMap <ArrayList, Integer> ();
-        readTransactions(); // read all transactions
-        
-        browseBttn.setEnabled(false);
-        runBttn.setEnabled(true);
+              
     }//GEN-LAST:event_browseBttnActionPerformed
 
     private void runBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runBttnActionPerformed
-        // get data
-        minSupport = checkInputValues(inputSupport.getText().trim());
-        minConfidence = checkInputValues(inputConfidence.getText().trim());      
-        minSupportCount = minSupport/100*numOfTransactions;
+        browseBttn.setEnabled(false);
+        runBttn.setEnabled(false);  
         
-        minSupportCountText.setText(minSupportCount + "");  // set text
+        SUPPORT = checkInputValues(inputSupport.getText());
+        CONFIDENCE = checkInputValues(inputConfidence.getText());
         
-        generateInitialItemSets(itemsFrequency, minSupportCount, maxItemSetSize);
+        // initialize 
+        TRANSACTIONS_LIST.clear();   
+        TOTAL_TRANSACTIONS = 0;
+        MAX_ITEMS = 0;
         
-        
-        runBttn.setEnabled(false);
+        readTransactions(); // read all transactions  
+        prunningProcess(TRANSACTIONS_LIST, SUPPORT);
     }//GEN-LAST:event_runBttnActionPerformed
 
     private void resetBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBttnActionPerformed
         browseBttn.setEnabled(true);
-        runBttn.setEnabled(false);
+        runBttn.setEnabled(true);
         inputSupport.setText("");
         inputConfidence.setText("");
-        jTextField1.setText("");
+        fileTextField.setText("");
         transactionsTextArea.setText("");
         resultTextArea.setText("");
         minSupportCountText.setText("");
     }//GEN-LAST:event_resetBttnActionPerformed
-
-    private void generateInitialItemSets(HashMap <ArrayList, Integer> map, double minSupportCount, int maxItemSetSize)
-    {        
-        do
-        {
-            if(currentSetSize == 0)
-            {
-                resultTextArea.append("Scanned performed: \n");
-                HashMap <String, Integer> _return = new HashMap <String, Integer> ();
-
-                for(Map.Entry me : map.entrySet())
-                {
-                    int freq = (int) me.getValue();
-                    if(freq >= minSupportCount)
-                    {
-                        _return.put(me.getKey().toString(), freq);
-                        resultTextArea.append("{" + me.getKey().toString() + "}\t-\t" + freq + "\n");
-                    }
-                    else
-                    {
-
-                    }         
-                }                
-                resultTextArea.append("\n");
-                currentSetSize ++;
-            }
-            else
-            {
-                resultTextArea.append("Scanned performed: \n");
-                HashMap <HashSet<String>, Integer> newItemSet = new HashMap <HashSet<String>, Integer> ();
-                
-
-                // Generate new itemSet
-                for(Map.Entry me1 : map.entrySet())
-                {
-                    String item1 = me1.getKey().toString();
-                    String item2 = "";
-                    
-                    int index = 0;
-                    int size = map.size();
-                    for(Map.Entry me2 : map.entrySet())
-                    {                               
-                        HashSet <String> set = new HashSet <String> ();
-                        
-                        if(index == 0);
-                        
-                        else if(index > 0 && index <= size)
-                        {
-                            item2 = me2.getKey().toString();   
-                            set.add(item1);
-                            set.add(item2);   
-                            newItemSet.put(set, 0);                         
-                        }
-                    } 
-                    index++;
-                }
-                    
-                // calculate the frequency
-                for(Map.Entry me : newItemSet.entrySet())
-                {
-                    HashSet newSet = (HashSet) me.getKey();
-                    
-                    for(int index = 0; index < transactionList.size(); index++)
-                    {
-                        
-                    }
-                    
-                }
-                
-                
-            }
-            currentSetSize ++;
-        }while(currentSetSize <= maxItemSetSize);
-    }
-    
-    
-    
-    
-    /**
-     * Read all transactions from the selected files
-     */
-    private void readTransactions()
-    {
-        maxItemSetSize = 0;
-        
-        String temp = "";
-        try {            
-            for(File f : files)
-            {
-                String filePath = f.getAbsolutePath();
-                transactionsTextArea.append("File: " + filePath + "\n");
-                temp += filePath + "; ";
-                
-                BufferedReader transactions = new BufferedReader(new FileReader(filePath));
-                while (transactions.ready()) 
-                {
-                    String line = transactions.readLine();
-                    ArrayList transactionArray = new ArrayList();  
-                    transactionArray.add(Arrays.asList(line.replace(" ", "").split(",")));
-                    
-                    transactionList.add(transactionArray);
-                    
-                    if(transactionArray.size() >= maxItemSetSize)
-                        maxItemSetSize = transactionArray.size();
-                    
-                    for(Object obj : transactionArray)
-                    {
-                        String item = obj.toString();
-                        
-                        if(itemsFrequency.containsKey(item)) // increase count by 1
-                            itemsFrequency.put(item, itemsFrequency.get(item) + 1);
-                        else
-                            itemsFrequency.put(item ,1);
-                    }
-                    
-                    transactionsTextArea.append(line + "\n");  
-                    numOfTransactions++;
-               }
-                transactionsTextArea.append("\n");
-            }
-            
-            jTextField1.setText(temp);
-        } catch (IOException ex) {
-            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
+      
     /**
      * Check the user's input value
      * Values must be between 0 and 1
@@ -424,12 +293,13 @@ public class GUI extends javax.swing.JFrame {
             Integer.parseInt(input);
             
             if (Double.isNaN(Double.parseDouble(input))) {
-                throw new IllegalArgumentException("The input support is not a number.");
+                JOptionPane.showMessageDialog(this, "Invalid input. You entered: " + input + ".\nYou must enter a number",
+                                            "WARNING", JOptionPane.WARNING_MESSAGE);
             }
 
             if (Double.parseDouble(input) > 100 || Double.parseDouble(input) < 0) {
-                throw new IllegalArgumentException(
-                        "The support should be between 0 and 100.");
+                JOptionPane.showMessageDialog(this, "Invalid input. You entered: " + input + ".\nYou must enter a number between 0 and 100",
+                                            "WARNING", JOptionPane.WARNING_MESSAGE);
             }
         }
         catch (NumberFormatException ex)
@@ -438,6 +308,101 @@ public class GUI extends javax.swing.JFrame {
                                             "WARNING", JOptionPane.WARNING_MESSAGE);
         }   
         return Double.parseDouble(input);
+    }    
+    
+    /**
+     * Read all transactions from the selected files
+     */
+    private void readTransactions()
+    {        
+        try {            
+            // loop through each of the selected files
+            for(File f : files)
+            {
+                // display 
+                String filePath = f.getAbsolutePath();
+                transactionsTextArea.append("File: " + filePath + "\n");
+                fileTextField.setText(fileTextField.getText() + filePath + ";");
+                
+                // create a new buffered reader to read data
+                BufferedReader transactions = new BufferedReader(new FileReader(filePath));
+                
+                // Go through each line within the file
+                while (transactions.ready()) 
+                {
+                    String line = transactions.readLine().replace(" ", "");  // a line in the file                    
+                    List <String> order = Arrays.asList(line.split(","));   // store all items in this transactions in a List
+                    
+                    TRANSACTIONS_LIST.add(order);   // add this transaction to the master list
+                    
+                    TOTAL_TRANSACTIONS++;   // increase the count of the total transactions
+                    if(line.split(",").length >= MAX_ITEMS)
+                        MAX_ITEMS = line.split(",").length;
+                    
+                    // display transactions
+                    transactionsTextArea.append("{ " + line + " }\n");
+                }
+                transactionsTextArea.append("\n");
+            }            
+        } catch (IOException ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void prunningProcess(ArrayList<List<String>> transactionsArray, double support_number)
+    {
+        resultTextArea.append("Prunning process started.");
+        for(List <String> transaction : transactionsArray)
+        {
+            for(String item : transaction)  // an item or set of items
+            {
+                if(ITEM_SET.isEmpty())
+                {
+                    ITEM_SET.put(item, 1);  
+                }
+                else
+                { 
+                    boolean inserted = false;
+                    for(String miniItemSet : ITEM_SET.keySet())
+                    {
+                        // check to see whether it's has only 1 item or more item in each itemSet
+                        if(miniItemSet.contains(","))   // it contains multiple items
+                        {
+                            List tmp1 = Arrays.asList(item.split(","));
+                            List tmp2 = Arrays.asList(miniItemSet.split(","));
+                            
+                            Collections.sort(tmp1);
+                            Collections.sort(tmp2);
+                            
+                            if(tmp1.equals(tmp2))
+                            {
+                                ITEM_SET.put(item, ITEM_SET.get(item) + 1);  
+                                inserted = true;
+                                break;
+                            }
+                        }
+                        else if(item.equalsIgnoreCase(miniItemSet))
+                        {
+                            ITEM_SET.put(item, ITEM_SET.get(item) + 1);
+                            inserted = true;
+                            break;
+                        }                         
+                        else
+                            inserted = false;
+                    }                    
+                    if(inserted == false)
+                    {
+                        ITEM_SET.put(item, 1);
+                    }
+                }
+            }
+        }    
+        
+        // Display
+        for(String itemSet : ITEM_SET.keySet())
+        {
+            resultTextArea.append("{ " + itemSet +  " }\t-\t" + ITEM_SET.get(itemSet) + "\n") ;
+        }        
     }
     
     /**
@@ -477,6 +442,7 @@ public class GUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton browseBttn;
+    private javax.swing.JTextField fileTextField;
     private javax.swing.JTextField inputConfidence;
     private javax.swing.JTextField inputSupport;
     private javax.swing.JLabel jLabel1;
@@ -491,7 +457,6 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JLabel minSupportCountText;
     private javax.swing.JButton resetBttn;
     private javax.swing.JTextArea resultTextArea;
