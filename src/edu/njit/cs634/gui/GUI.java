@@ -97,7 +97,7 @@ public class GUI extends javax.swing.JFrame {
 
         jLabel3.setText("Support %:");
 
-        inputSupport.setText("20");
+        inputSupport.setText("30");
 
         jLabel4.setText("Confidence %:");
 
@@ -105,6 +105,7 @@ public class GUI extends javax.swing.JFrame {
 
         transactionsTextArea.setColumns(20);
         transactionsTextArea.setRows(5);
+        transactionsTextArea.setWrapStyleWord(true);
         jScrollPane2.setViewportView(transactionsTextArea);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -113,14 +114,14 @@ public class GUI extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 496, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -128,6 +129,7 @@ public class GUI extends javax.swing.JFrame {
 
         logTextArea.setColumns(20);
         logTextArea.setRows(5);
+        logTextArea.setWrapStyleWord(true);
         jScrollPane1.setViewportView(logTextArea);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -136,14 +138,14 @@ public class GUI extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 496, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -151,6 +153,7 @@ public class GUI extends javax.swing.JFrame {
 
         resultTextArea.setColumns(20);
         resultTextArea.setRows(5);
+        resultTextArea.setWrapStyleWord(true);
         jScrollPane3.setViewportView(resultTextArea);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -159,14 +162,14 @@ public class GUI extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 496, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -201,39 +204,37 @@ public class GUI extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jTabbedPane1)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel5)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(minSupportCountText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(jLabel3)
-                                                    .addComponent(jLabel2))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                    .addComponent(fileTextField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                    .addGroup(layout.createSequentialGroup()
-                                                        .addComponent(inputSupport, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addGap(18, 18, 18)
-                                                        .addComponent(jLabel4)
-                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                        .addComponent(inputConfidence, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel5)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(minSupportCountText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(resetBttn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jLabel3)
+                                            .addComponent(jLabel2))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(fileTextField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                             .addGroup(layout.createSequentialGroup()
-                                                .addComponent(runBttn)
-                                                .addGap(0, 0, Short.MAX_VALUE))
-                                            .addComponent(browseBttn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                                .addComponent(inputSupport, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(jLabel4)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(inputConfidence, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(resetBttn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(runBttn)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addComponent(browseBttn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(jLabel1)))
-                        .addGap(10, 10, 10)))
+                        .addGap(10, 10, 10))
+                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.LEADING))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -268,7 +269,7 @@ public class GUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 5, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTabbedPane1)
                 .addContainerGap())
         );
 
@@ -277,16 +278,17 @@ public class GUI extends javax.swing.JFrame {
 
     private void browseBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseBttnActionPerformed
         fileChooser.showOpenDialog(frame);
-        files = fileChooser.getSelectedFiles();
-        
-        TOTAL_TRANSACTIONS = 0;
-              
+        files = fileChooser.getSelectedFiles();            
     }//GEN-LAST:event_browseBttnActionPerformed
 
     private void runBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runBttnActionPerformed
         browseBttn.setEnabled(false);
-        runBttn.setEnabled(false);  
+        runBttn.setEnabled(false); 
+        inputSupport.setEnabled(false);
+        inputConfidence.setEnabled(false);
         
+        // Check for valid input
+        // only allow whole number from 0 to 100
         SUPPORT = checkInputValues(inputSupport.getText());
         CONFIDENCE = checkInputValues(inputConfidence.getText());
         
@@ -298,9 +300,24 @@ public class GUI extends javax.swing.JFrame {
         MIN_SUPPORT_COUNT = TOTAL_TRANSACTIONS * SUPPORT/100;
         minSupportCountText.setText(MIN_SUPPORT_COUNT + "");                
         
-        prunningProcess(TRANSACTIONS_LIST, MIN_SUPPORT_COUNT);
+        HashMap <String, Integer> h1 = scanningProcess(TRANSACTIONS_LIST, MIN_SUPPORT_COUNT);
+        ArrayList <List<String>> l1 = generateNewItemSet(h1, MAX_ITEMS);
+        HashMap <String, Integer> h2 = scanningProcess(l1, MIN_SUPPORT_COUNT);
+        ArrayList <List<String>> l2 = generateNewItemSet(h2, MAX_ITEMS);
+        
+        for(List <String> L : l2)
+        {
+            for(String s : L)
+            {
+                System.out.println(s);
+            }
+        }
     }//GEN-LAST:event_runBttnActionPerformed
 
+    /**
+     * Reset all parameters
+     * @param evt 
+     */
     private void resetBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBttnActionPerformed
         browseBttn.setEnabled(true);
         runBttn.setEnabled(true);
@@ -340,6 +357,8 @@ public class GUI extends javax.swing.JFrame {
      */
     private void readTransactions()
     {        
+        TOTAL_TRANSACTIONS = 0;  // reset the total number of transactions
+        
         try {            
             // loop through each of the selected files
             for(File f : files)
@@ -375,54 +394,55 @@ public class GUI extends javax.swing.JFrame {
         }
     }
     
-    private HashMap<String, Integer> prunningProcess(ArrayList<List<String>> transactionsArray, int support_number)
+    /**
+     * Combining through an itemSet list and only select those that meet the support number
+     * @param transactionsArray the itemset list
+     * @param support_number the support number
+     * @return the reduced itemset list that met the support number
+     */
+    private HashMap<String, Integer> scanningProcess(ArrayList<List<String>> transactionsArray, int support_number)
     {
         HashMap <String, Integer> newItemSet = new HashMap();
-                
-        logTextArea.append("Prunning process started.\n");
+        ITEM_SET.clear();
+        
+        logTextArea.append("Scanning process started.\n");
         for(List <String> transaction : transactionsArray)
         {
             for(String item : transaction)  // an item or set of items
             {
-                if(ITEM_SET.isEmpty())
+                boolean inserted = false;
+                for(String miniItemSet : ITEM_SET.keySet())
                 {
-                    ITEM_SET.put(item, 1);  
-                }
-                else
-                { 
-                    boolean inserted = false;
-                    for(String miniItemSet : ITEM_SET.keySet())
+                    // check to see whether it's has only 1 item or more item in each itemSet
+                    if(miniItemSet.contains(","))   // it contains multiple items
                     {
-                        // check to see whether it's has only 1 item or more item in each itemSet
-                        if(miniItemSet.contains(","))   // it contains multiple items
+                        List tmp1 = Arrays.asList(item.split(","));
+                        List tmp2 = Arrays.asList(miniItemSet.split(","));
+
+                        Collections.sort(tmp1);
+                        Collections.sort(tmp2);
+
+                        if(tmp1.equals(tmp2))
                         {
-                            List tmp1 = Arrays.asList(item.split(","));
-                            List tmp2 = Arrays.asList(miniItemSet.split(","));
-                            
-                            Collections.sort(tmp1);
-                            Collections.sort(tmp2);
-                            
-                            if(tmp1.equals(tmp2))
-                            {
-                                ITEM_SET.put(item, ITEM_SET.get(item) + 1);  
-                                inserted = true;
-                                break;
-                            }
-                        }
-                        else if(item.equalsIgnoreCase(miniItemSet))
-                        {
-                            ITEM_SET.put(item, ITEM_SET.get(item) + 1);
+                            ITEM_SET.put(item, ITEM_SET.get(item) + 1);  
                             inserted = true;
                             break;
-                        }                         
-                        else
-                            inserted = false;
-                    }                    
-                    if(inserted == false)
-                    {
-                        ITEM_SET.put(item, 1);
+                        }
                     }
+                    else if(item.equalsIgnoreCase(miniItemSet))
+                    {
+                        ITEM_SET.put(item, ITEM_SET.get(item) + 1);
+                        inserted = true;
+                        break;
+                    }                         
+                    else
+                        inserted = false;
+                }                    
+                if(inserted == false)
+                {
+                    ITEM_SET.put(item, 1);
                 }
+                
             }
         }    
         
@@ -451,6 +471,45 @@ public class GUI extends javax.swing.JFrame {
         
         return newItemSet;
     }
+    
+    /**
+     * Generate new itemset from 
+     * @param itemSet
+     * @param support_number
+     * @return 
+     */
+    private ArrayList<List<String>> generateNewItemSet(HashMap<String, Integer> itemSet, int maxItems)
+    {
+        ArrayList<List<String>> newItemSet = new ArrayList <>();        
+        
+        String item1, item2;
+        
+        List itemSetList = new ArrayList(itemSet.keySet());
+        
+        if(itemSetList.get(0).toString().split(",").length >= maxItems)
+        {
+            // something is wrong here
+            return newItemSet;
+        }
+        else
+        {
+            for(int index = 0; index < itemSetList.size()-1; index++)
+            {
+                item1 = itemSetList.get(index).toString();
+
+                for(int index2 = index+1; index2 < itemSetList.size(); index2++)
+                {
+                    item2 = itemSetList.get(index2).toString();
+                    
+                    List <String> newItem = new ArrayList<> ();
+                    newItem.add(item1 + "," + item2);
+                    
+                    newItemSet.add(newItem);
+                }                
+            }           
+        }                
+        return newItemSet;
+    }    
     
     /**
      * @param args the command line arguments
