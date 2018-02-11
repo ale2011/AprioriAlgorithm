@@ -296,13 +296,13 @@ public class GUI extends javax.swing.JFrame {
         MIN_SUPPORT_COUNT = TOTAL_TRANSACTIONS * SUPPORT/100;
         minSupportCountText.setText(MIN_SUPPORT_COUNT + "");                
         
-        HashMap <String, Integer> h1 = initialScan(TRANSACTIONS_LIST, MIN_SUPPORT_COUNT);
+        HashMap <String, Integer> h1 = getFrequentItems(TRANSACTIONS_LIST, MIN_SUPPORT_COUNT);
         ArrayList <List<String>> l1 = generateCandidates(h1, MAX_ITEMS);
         System.out.println("OK");
-        HashMap <String, Integer> h2 = scanningProcess(l1, MIN_SUPPORT_COUNT);
+        HashMap <String, Integer> h2 = pruneCandidates(l1, MIN_SUPPORT_COUNT);
         ArrayList <List<String>> l2 = generateCandidates(h2, MAX_ITEMS);
         System.out.println("OKAY");
-        HashMap <String, Integer> h3 = scanningProcess(l2, MIN_SUPPORT_COUNT);
+        HashMap <String, Integer> h3 = pruneCandidates(l2, MIN_SUPPORT_COUNT);
         ArrayList <List<String>> l3 = generateCandidates(h3, MAX_ITEMS);
         
         
@@ -325,6 +325,8 @@ public class GUI extends javax.swing.JFrame {
         logTextArea.setText("");
         resultTextArea.setText("");
         minSupportCountText.setText("");
+        
+        ITEM_SET = new HashMap();
     }//GEN-LAST:event_resetBttnActionPerformed
 
     private void browseBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseBttnActionPerformed
@@ -405,7 +407,7 @@ public class GUI extends javax.swing.JFrame {
      * @param support_number the support number
      * @return the reduced itemset list that met the support number
      */
-    private HashMap<String, Integer> initialScan(ArrayList<List<String>> transactionsArray, int support_number)
+    private HashMap<String, Integer> getFrequentItems(ArrayList<List<String>> transactionsArray, int support_number)
     {
         HashMap <String, Integer> newItemSet = new HashMap();
 
@@ -530,10 +532,10 @@ public class GUI extends javax.swing.JFrame {
      * @param support_number the support number
      * @return the reduced itemset list that met the support number
      */
-    private HashMap<String, Integer> scanningProcess(ArrayList<List<String>> transactionsArray, int support_number)
+    private HashMap<String, Integer> pruneCandidates(ArrayList<List<String>> transactionsArray, int support_number)
     {
         HashMap <String, Integer> newItemSet = new HashMap();
-        ITEM_SET.clear();
+        ITEM_SET = new HashMap();
         
         logTextArea.append("\nScanning process started.\n");
         for(List<String> transaction : transactionsArray)
