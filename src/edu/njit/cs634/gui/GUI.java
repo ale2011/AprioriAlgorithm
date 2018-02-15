@@ -5,15 +5,21 @@
  */
 package edu.njit.cs634.gui;
 
+
 import java.awt.Component;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+
+import edu.njit.cs634.helper.AprioriItemsetGenerator;
+import edu.njit.cs634.helper.FrequentItemset;
+import edu.njit.cs634.helper.ItemsetList;
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -23,12 +29,10 @@ public class GUI extends javax.swing.JFrame {
     
     public final Chooser fileChooser = new Chooser();
     public File[] files;
-    //public final int totalTransaction;  // total number of transactions accross all databases
-    //public final int minTransaction;    // the minimum number of transactions needed to satisfy
-                                        //  support percentage
     
-    private ArrayList <List<String>> TRANSACTIONS_LIST = new ArrayList ();
-    private HashMap <String, Integer> ITEM_SET = new HashMap();
+    private ItemsetList TRANSACTIONS_LIST = new ItemsetList();
+    private AprioriItemsetGenerator <String> generator = new AprioriItemsetGenerator <>();
+    private FrequentItemset<String> data;
     
     private final Component frame = null;
     private int SUPPORT, CONFIDENCE; // store user's input
@@ -275,18 +279,26 @@ public class GUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Browse for input files
+     * @param evt 
+     */
     private void browseBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseBttnActionPerformed
         fileChooser.showOpenDialog(frame);
         files = fileChooser.getSelectedFiles();
         
         TOTAL_TRANSACTIONS = 0;
-              
     }//GEN-LAST:event_browseBttnActionPerformed
 
+    /**
+     * Run the Apriori Algorithm based on the input
+     * @param evt 
+     */
     private void runBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runBttnActionPerformed
         browseBttn.setEnabled(false);
         runBttn.setEnabled(false);  
         
+        // get users' input
         SUPPORT = checkInputValues(inputSupport.getText());
         CONFIDENCE = checkInputValues(inputConfidence.getText());
         
@@ -296,11 +308,18 @@ public class GUI extends javax.swing.JFrame {
         
         readTransactions(); // read all transactions  
         MIN_SUPPORT_COUNT = TOTAL_TRANSACTIONS * SUPPORT/100;
-        minSupportCountText.setText(MIN_SUPPORT_COUNT + "");                
+        minSupportCountText.setText(MIN_SUPPORT_COUNT + "");    
         
-        prunningProcess(TRANSACTIONS_LIST, MIN_SUPPORT_COUNT);
+        data = generator.generate((List<Set<String>>) TRANSACTIONS_LIST, SUPPORT);
+        
+        // PRINT RESULTS
+        
     }//GEN-LAST:event_runBttnActionPerformed
 
+    /**
+     * Reset all fields and inputs
+     * @param evt 
+     */
     private void resetBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBttnActionPerformed
         browseBttn.setEnabled(true);
         runBttn.setEnabled(true);
@@ -356,10 +375,8 @@ public class GUI extends javax.swing.JFrame {
                 while (transactions.ready()) 
                 {
                     String line = transactions.readLine().replace(" ", "");  // a line in the file                    
-                    List <String> order = Arrays.asList(line.split(","));   // store all items in this transactions in a List
-                    
-                    TRANSACTIONS_LIST.add(order);   // add this transaction to the master list
-                    
+
+                    TRANSACTIONS_LIST.addItem(line);   // add this transaction to the master list
                     TOTAL_TRANSACTIONS++;   // increase the count of the total transactions
                     
                     if(line.split(",").length >= MAX_ITEMS)
@@ -375,82 +392,6 @@ public class GUI extends javax.swing.JFrame {
         }
     }
     
-    private HashMap<String, Integer> prunningProcess(ArrayList<List<String>> transactionsArray, int support_number)
-    {
-        HashMap <String, Integer> newItemSet = new HashMap();
-                
-        logTextArea.append("Prunning process started.\n");
-        for(List <String> transaction : transactionsArray)
-        {
-            for(String item : transaction)  // an item or set of items
-            {
-                if(ITEM_SET.isEmpty())
-                {
-                    ITEM_SET.put(item, 1);  
-                }
-                else
-                { 
-                    boolean inserted = false;
-                    for(String miniItemSet : ITEM_SET.keySet())
-                    {
-                        // check to see whether it's has only 1 item or more item in each itemSet
-                        if(miniItemSet.contains(","))   // it contains multiple items
-                        {
-                            List tmp1 = Arrays.asList(item.split(","));
-                            List tmp2 = Arrays.asList(miniItemSet.split(","));
-                            
-                            Collections.sort(tmp1);
-                            Collections.sort(tmp2);
-                            
-                            if(tmp1.equals(tmp2))
-                            {
-                                ITEM_SET.put(item, ITEM_SET.get(item) + 1);  
-                                inserted = true;
-                                break;
-                            }
-                        }
-                        else if(item.equalsIgnoreCase(miniItemSet))
-                        {
-                            ITEM_SET.put(item, ITEM_SET.get(item) + 1);
-                            inserted = true;
-                            break;
-                        }                         
-                        else
-                            inserted = false;
-                    }                    
-                    if(inserted == false)
-                    {
-                        ITEM_SET.put(item, 1);
-                    }
-                }
-            }
-        }    
-        
-        // Display log
-        for(String itemSet : ITEM_SET.keySet())
-        {
-            logTextArea.append("{ " + itemSet +  " }\t-\t" + ITEM_SET.get(itemSet)) ;
-            
-            if(ITEM_SET.get(itemSet) >= support_number)
-            {
-                logTextArea.append("  ***\n");
-                newItemSet.put(itemSet, ITEM_SET.get(itemSet));
-            }
-            else
-                logTextArea.append("\n");
-        }        
-        
-        // display in the result area
-        resultTextArea.append("=== New ItemSet === \n");
-        for(String itemSet : newItemSet.keySet())
-        {
-            resultTextArea.append("{ " + itemSet +  " }\t-\t" + ITEM_SET.get(itemSet) + "\n") ;
-        }
-        resultTextArea.append("\n");
-        
-        
-        return newItemSet;
-    }
     
     /**
      * @param args the command line arguments
