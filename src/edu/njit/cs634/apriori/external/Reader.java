@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.njit.cs634.apriori.file;
+package edu.njit.cs634.apriori.external;
 
 import edu.njit.cs634.gui.GUI;
 import edu.njit.cs634.helper.Mapping;
@@ -25,7 +25,8 @@ public class Reader {
 
     public static File tmpFile;
     
-    public static void convertAndMergeFile(File[] files) {
+    public static void convertAndMergeFile(File[] files) 
+    {
         String write = "";
         
         try {
@@ -48,13 +49,22 @@ public class Reader {
                 reader.close();
             }
             
-            tmpFile = File.createTempFile("mergedTransactions", ".tmp");
-            BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFile));
-            bw.write(write);
-            bw.close();
+            writeToTempFile(write);
             
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Reader.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Reader.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static void writeToTempFile(String toWrite)
+    {
+        try {
+            tmpFile = File.createTempFile("mergedTransactions", ".tmp");
+            BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFile));
+            bw.write(toWrite);
+            bw.close();
         } catch (IOException ex) {
             Logger.getLogger(Reader.class.getName()).log(Level.SEVERE, null, ex);
         }

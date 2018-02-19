@@ -87,8 +87,6 @@ public class Apriori extends Observable {
             while (data_in.ready()) 
             {
                 String line = data_in.readLine();
-                
-
                 if (line.matches("\\s*")) 
                     continue; // be friendly with empty lines
 
