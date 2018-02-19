@@ -1,6 +1,6 @@
-package edu.njit.cs634.helper;
+package edu.njit.cs634.apriori.helper;
 
-import edu.njit.cs634.gui.GUI;
+import edu.njit.cs634.apriori.gui.GUI;
 import java.io.*;
 import java.util.*;
 

@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.njit.cs634.gui;
+package edu.njit.cs634.apriori.gui;
 
 import edu.njit.cs634.apriori.external.DatabaseUtils;
 import edu.njit.cs634.apriori.external.Reader;
-import edu.njit.cs634.helper.Apriori;
+import edu.njit.cs634.apriori.helper.Apriori;
 import java.awt.Component;
 import java.io.File;
 import java.sql.SQLException;

@@ -6,8 +6,8 @@
 package edu.njit.cs634.apriori.external;
 
 import static edu.njit.cs634.apriori.external.Reader.tmpFile;
-import edu.njit.cs634.gui.GUI;
-import edu.njit.cs634.helper.Mapping;
+import edu.njit.cs634.apriori.gui.GUI;
+import edu.njit.cs634.apriori.helper.Mapping;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;

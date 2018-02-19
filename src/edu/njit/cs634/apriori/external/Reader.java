@@ -5,8 +5,8 @@
  */
 package edu.njit.cs634.apriori.external;
 
-import edu.njit.cs634.gui.GUI;
-import edu.njit.cs634.helper.Mapping;
+import edu.njit.cs634.apriori.gui.GUI;
+import edu.njit.cs634.apriori.helper.Mapping;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;

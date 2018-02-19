@@ -1,4 +1,4 @@
-package edu.njit.cs634.gui;
+package edu.njit.cs634.apriori.gui;
 
 import java.awt.Component;
 import java.io.File;
