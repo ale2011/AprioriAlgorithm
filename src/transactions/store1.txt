@@ -2,7 +2,7 @@ beer, peanuts
 soda, chocolate, kitkat
 kitkat, sneakers, water
 yogurt, milk, peanuts
-popsicle, soda
+soda, popsicle
 peanuts, water, yogurt
 beer, popsicle
 soda, sneakers
