@@ -4,8 +4,12 @@ import java.awt.Component;
 import java.io.File;
 
 /**
- *
- * @author Admin
+ * Chooser.java
+ * The Chooser class represents the file chooser dialog box 
+ * that enables the users to select data transactions file(s). 
+ * 
+ * @author Ashley Le
+ * @version 20180222
  */
 public class Chooser extends javax.swing.JFrame {
 
