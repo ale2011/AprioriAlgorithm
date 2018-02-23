@@ -4,11 +4,31 @@
   <NonVisualComponents>
     <Component class="javax.swing.ButtonGroup" name="buttonGroup1">
     </Component>
+    <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
+      <SubComponents>
+        <Menu class="javax.swing.JMenu" name="jMenu2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Info"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="About"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem1ActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
+      </SubComponents>
+    </Menu>
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
   </Properties>
   <SyntheticProperties>
+    <SyntheticProperty name="menuBar" type="java.lang.String" value="jMenuBar1"/>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
     <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
@@ -40,18 +60,18 @@
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="fileRadio" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
-                                  <Component id="dbRadio" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
                                   <Group type="102" attributes="0">
-                                      <EmptySpace min="21" pref="21" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="dbBttn" min="-2" pref="140" max="-2" attributes="0"/>
-                                          <Component id="browseBttn" min="-2" pref="140" max="-2" attributes="0"/>
+                                          <Component id="fileRadio" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
+                                          <Component id="dbRadio" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
                                       </Group>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
+                                  <Component id="dbBttn" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="browseBttn" alignment="1" max="32767" attributes="0"/>
                               </Group>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="jScrollPane5" max="32767" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="jScrollPane5" min="-2" pref="490" max="-2" attributes="0"/>
                           </Group>
                           <Component id="resetBttn" min="-2" pref="133" max="-2" attributes="0"/>
                           <Component id="jTabbedPane2" alignment="0" max="32767" attributes="0"/>
@@ -126,7 +146,7 @@
           <Font name="Tahoma" size="24" style="3"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="Apriori Algorithm"/>
+        <Property name="text" type="java.lang.String" value="Ashley&apos;s Apriori Application (AAApp) "/>
       </Properties>
     </Component>
     <Component class="javax.swing.JSeparator" name="jSeparator1">
