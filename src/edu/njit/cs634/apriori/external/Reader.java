@@ -1,4 +1,3 @@
-
 package edu.njit.cs634.apriori.external;
 
 import edu.njit.cs634.apriori.gui.GUI;
@@ -15,27 +14,27 @@ import java.util.logging.Logger;
 
 /**
  * Reader.java
- * 
- * The Reader class contains methods to read external text files that contains the 
- * transactions. While reading the transactions, the Reader will combine transactions 
- * from all of the external files into one single files for easy retrieval.
+ * This class contains methods that read the transactions from multiple text files 
+ *  and combine it into a single file while doing other calculation to assist the
+ *  Apriori algorithm
  * 
  * @author Ashley Le
- * @version 20180222
+ * @version 20180220
  */
-public class Reader {
-
-    public static File tmpFile;
+public class Reader 
+{
+    public static File tmpFile; // the temp file
     
     /**
-     * Read multiple transactions Files and combine them into 1 
-     * @param files the array that contains the files
+     * Convert all text to its assigned integer number
+     * @param files the array that contains all files
      */
     public static void convertAndMergeFile(File[] files) 
     {
-        String write = "";
+        try 
+        {
+            String write = "";
         
-        try {
             for (File file : files) 
             {
                 GUI.transactionTextArea.append("File: " + file.getAbsolutePath() + "\n");
@@ -65,8 +64,8 @@ public class Reader {
     }
     
     /**
-     * Write a string to the tempFile
-     * @param toWrite the string to be written
+     * Write the converted transactions (or any string) to the temp file
+     * @param toWrite the string
      */
     public static void writeToTempFile(String toWrite)
     {

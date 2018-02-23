@@ -5,15 +5,15 @@ import java.io.File;
 
 /**
  * Chooser.java
- * The Chooser class represents the file chooser dialog box 
- * that enables the users to select data transactions file(s). 
+ * This class represents the JChooser object that is used 
+ *  to select one or more text files that contains the transactions
  * 
  * @author Ashley Le
- * @version 20180222
+ * @version 20180220
  */
 public class Chooser extends javax.swing.JFrame {
 
-    private File[] files;
+    private File[] files;   // the arrays that contains all the selected files
     
     /**
      * Creates new form FileChooser
@@ -23,11 +23,19 @@ public class Chooser extends javax.swing.JFrame {
         jFileChooser1.setMultiSelectionEnabled(true);
     }
 
+    /**
+     * Show the dialog
+     * @param frame 
+     */
     public void showOpenDialog(Component frame)
     {
         jFileChooser1.showOpenDialog(frame);
     }
     
+    /**
+     * Get and store the selected files
+     * @return the selected files
+     */
     public File[] getSelectedFiles()
     {
         files = jFileChooser1.getSelectedFiles();

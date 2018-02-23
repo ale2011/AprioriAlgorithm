@@ -5,39 +5,33 @@ import edu.njit.cs634.apriori.external.Reader;
 import edu.njit.cs634.apriori.helper.Apriori;
 import java.awt.Component;
 import java.io.File;
-import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
  * GUI.java
- * The GUI class is the main class of the AAApp. 
- * It contains codes that draw the user interface. 
- * Additionally, it also has embeded actions (in codes) 
- * to execute appropriate actions based on the mouse click.
+ * This is the main class of the program.
+ *  It has the codes for the GUI 
  * 
  * @author Ashley Le
- * @version 20180222
+ * @version 20180220
  */
 public class GUI extends javax.swing.JFrame {
     
-    public final Chooser fileChooser = new Chooser();
-    public File[] files;
-    //public final int totalTransaction;  // total number of transactions accross all databases
-    //public final int minTransaction;    // the minimum number of transactions needed to satisfy
-                                        //  support percentage
+    public final Chooser fileChooser = new Chooser();       // the file chooser obj
+    public File[] files;    // the array that contains the selected files
     
-    private List<String> TRANSACTIONS_LIST = new ArrayList ();
-    private HashMap <String, Integer> ITEM_SET = new HashMap();
-    
-    private final Component frame = null;
-    public static double SUPPORT, CONFIDENCE; // store user's input
+    private final Component frame = null;       // this frame
+    public static double SUPPORT, CONFIDENCE;   // store user's input
     
     /**
-     * Creates new form Apriori
+     * Initialize the GUI
      */
-    public GUI() {
+    public GUI() 
+    {
+        // display something before the main GUI
+        
         initComponents();
     }
 
@@ -88,6 +82,7 @@ public class GUI extends javax.swing.JFrame {
         jLabel1.setText("Ashley's Apriori Application (AAApp) ");
 
         runBttn.setText("Run Apriori Algorithm");
+        runBttn.setToolTipText("Run the Apriori Algorithm");
         runBttn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runBttnActionPerformed(evt);
@@ -97,10 +92,12 @@ public class GUI extends javax.swing.JFrame {
         jLabel3.setText("Support (in decimal):");
 
         inputSupport.setText("0.3");
+        inputSupport.setToolTipText("Ex: Enter 0.2 for 20%");
 
         jLabel4.setText("Confidence (in decimal):");
 
         inputConfidence.setText("0.4");
+        inputConfidence.setToolTipText("Ex: Enter 0.2 for 20%");
 
         resetBttn.setText("RESET");
         resetBttn.addActionListener(new java.awt.event.ActionListener() {
@@ -202,6 +199,7 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        dbBttn.setToolTipText("Connect and get all transactions from multiple databases");
         dbBttn.setLabel("Load from Databases");
         dbBttn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -210,6 +208,7 @@ public class GUI extends javax.swing.JFrame {
         });
 
         browseBttn.setText("Browse...");
+        browseBttn.setToolTipText("Browse transactions files");
         browseBttn.setEnabled(false);
         browseBttn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -235,10 +234,11 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSeparator2)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel3)
@@ -246,21 +246,21 @@ public class GUI extends javax.swing.JFrame {
                                 .addComponent(inputSupport, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(512, 512, 512))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(dbRadio, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addGroup(layout.createSequentialGroup()
+                                        .addGap(21, 21, 21)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(fileRadio, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(dbRadio, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(0, 0, Short.MAX_VALUE))
-                                    .addComponent(dbBttn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(browseBttn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                            .addComponent(dbBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(browseBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(fileRadio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 490, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jScrollPane5))
                             .addComponent(resetBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTabbedPane2, javax.swing.GroupLayout.Alignment.LEADING)))
-                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jTabbedPane2, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 701, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -280,7 +280,7 @@ public class GUI extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 5, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(dbRadio)
@@ -292,8 +292,8 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(browseBttn))
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(inputSupport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -301,7 +301,7 @@ public class GUI extends javax.swing.JFrame {
                     .addComponent(inputConfidence, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(runBttn))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(10, 10, 10)
                 .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(10, 10, 10)
@@ -312,8 +312,13 @@ public class GUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Run Apriori algorithm
+     * @param evt click on button
+     */
     private void runBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runBttnActionPerformed
-        try {
+        try 
+        {
             if(fileDir.getText().length() != 0)
             {
                 browseBttn.setEnabled(false);
@@ -327,20 +332,19 @@ public class GUI extends javax.swing.JFrame {
                 SUPPORT = checkUserValues(inputSupport.getText());
                 CONFIDENCE = checkUserValues(inputConfidence.getText());
 
-
                 if(fileRadio.isSelected())
                     Reader.convertAndMergeFile(files);
 
-                Apriori apr = new Apriori(Reader.tmpFile, SUPPORT, CONFIDENCE);
-
-                JOptionPane.showMessageDialog(frame, "Completed!", "Complete!", JOptionPane.CLOSED_OPTION);
+                Apriori apr = new Apriori(Reader.tmpFile, SUPPORT, CONFIDENCE);     
+                JOptionPane.showMessageDialog(frame, "Complete!", "Complete!", JOptionPane.OK_CANCEL_OPTION);
             }
             else
             {
-                JOptionPane.showMessageDialog(frame, "You must select transactions data before running Appriori", "ERROR - Missing data", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "You must select transactions data prior to running Apriori", "ERROR - Missing Data", JOptionPane.ERROR_MESSAGE);
             }
-            
-        } catch (Exception ex) {
+        } 
+        catch (Exception ex) 
+        {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
                 
@@ -357,27 +361,36 @@ public class GUI extends javax.swing.JFrame {
         inputConfidence.setEnabled(true);
         
         inputSupport.setText("0.3");
-        inputConfidence.setText("0.3");
+        inputConfidence.setText("0.4");
         fileDir.setText("");
         transactionTextArea.setText("");
         resultTextArea.setText("");
         associationTextArea.setText("");
         
-        ITEM_SET = new HashMap();
         Reader.tmpFile.delete();
     }//GEN-LAST:event_resetBttnActionPerformed
 
+    /**
+     * Browse for the transaction files
+     * @param evt click BROWSE bttn
+     */
     private void browseBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseBttnActionPerformed
         fileChooser.showOpenDialog(frame);
         files = fileChooser.getSelectedFiles();  
         
+        fileDir.setText("");
         for(File f : files)
         {
             fileDir.append(f.getAbsolutePath() + "\n");
         }       
+        
         runBttn.setEnabled(true);
     }//GEN-LAST:event_browseBttnActionPerformed
 
+    /**
+     * if database radio button is selected
+     * @param evt 
+     */
     private void dbRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dbRadioActionPerformed
         if(dbRadio.isSelected())
         {
@@ -387,6 +400,10 @@ public class GUI extends javax.swing.JFrame {
         
     }//GEN-LAST:event_dbRadioActionPerformed
 
+    /**
+     * if file radio button is selected
+     * @param evt 
+     */
     private void fileRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileRadioActionPerformed
         if(fileRadio.isSelected())
         {
@@ -395,13 +412,17 @@ public class GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_fileRadioActionPerformed
 
+    /**
+     * COnnect and get transactions from the database
+     * @param evt click on database button
+     */
     private void dbBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dbBttnActionPerformed
-        
-            DatabaseUtils db = new DatabaseUtils();
+        fileDir.setText("");
+        DatabaseUtils db = new DatabaseUtils();
     }//GEN-LAST:event_dbBttnActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        JOptionPane.showMessageDialog(frame, "Ashley's Apriori Application (AAApp)\n\nName: Ashley Le\nUCID: al462\nClass: CS634 Distance Learning\nSpring 2018", "ABOUT", JOptionPane.CLOSED_OPTION);
+        JOptionPane.showMessageDialog(frame, "Ashley's Apriori Application\n\nName: Ashley Le\nUCID: al462\nEmail: al462@njit.edu\nClass: CS634 Distance Learning\nSpring 2018", "About", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
       
     /**
@@ -409,15 +430,15 @@ public class GUI extends javax.swing.JFrame {
      * Values must be between 0 and 1
      * @param input the user's input
      */
-    private double checkUserValues(String input) {
+    private double checkUserValues(String input) 
+    {
         try
         {
             Double.parseDouble(input);
 
-            if (Double.parseDouble(input) > 1.0 || Double.parseDouble(input) < 0) {
+            if (Double.parseDouble(input) > 1.0 || Double.parseDouble(input) < 0) 
                 JOptionPane.showMessageDialog(this, "Invalid input. You entered: " + input + ".\nYou must enter the percentage (in decimal) between 0 and 1.",
-                                            "WARNING", JOptionPane.WARNING_MESSAGE);
-            }
+                                            "WARNING", JOptionPane.WARNING_MESSAGE);            
         }
         catch (NumberFormatException ex)
         {
@@ -425,7 +446,8 @@ public class GUI extends javax.swing.JFrame {
                                             "WARNING", JOptionPane.WARNING_MESSAGE);
         }   
         return Double.parseDouble(input);
-    }    
+    } 
+    
     
     /**
      * @param args the command line arguments
@@ -453,10 +475,7 @@ public class GUI extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

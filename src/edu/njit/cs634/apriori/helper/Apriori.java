@@ -1,338 +1,163 @@
 package edu.njit.cs634.apriori.helper;
 
-import edu.njit.cs634.apriori.gui.GUI;
 import java.io.*;
 import java.util.*;
+import edu.njit.cs634.apriori.gui.GUI;
 
-public class Apriori extends Observable {
-
-    private List<int[]> itemsets;   // list of current item set
-    private File transaFile;    // all transactions files
-    private int numItems;   // number of different items in the datasets
-    private int numTransactions;    // number of transactions in transactions files
-    private double minSup;  // min support percentage
-    private static double minConf;  // min confidence percentage
+/**
+ * Apriori.java
+ * This class contains methods to assist the Apriori algorithm
+ * 
+ * @author Ashley Le
+ * @version 20180220
+ */
+public class Apriori
+{
+    public static List<int[]> itemsets;    // list of current item set
+    public static File aFile;              // all transactions files
+    public static int NUM_ITEMS;           // number of different items in the datasets
+    public static int NUM_TRANSACTIONS;    // number of transactions in transactions files
+    public static double SUPPORT;          // min support percentage
+    public static double CONFIDENCE;       // min confidence percentage
     
-    private static List< String> tupples = new ArrayList< String>();    // stores the values from the frequent itemsets
+    public static List<String> tupples = new ArrayList< String>();    // stores the values from the frequent itemsets
 
-    public Apriori(File myFile, double support, double confidence) throws Exception {
-        transaFile = myFile;
-        minSup = support;
-        minConf = confidence;
-        configure();
-        go();
+    /**
+     * Constructor
+     * @param file  The file contains combined the transactions
+     * @param support   minimum support percentage in decimal
+     * @param confidence minimum confidence percentage in decimal
+     * @param b true if need to read text files. false if using the database
+     */
+    public Apriori(File file, double support, double confidence)
+    {
+        aFile = file;               // set the file
+        SUPPORT = support;          // set the support
+        CONFIDENCE = confidence;    // set the confidence
+        
+        Configurations.config(aFile);   // run the configuration
+        
+        execute();
     }
 
     /**
-     * starts the algorithm after configuration
+     * Start the Apriori process
      */
-    private void go() throws Exception {
-        //start timer
-        long start = System.currentTimeMillis();
-
-        // first we generate the candidates of size 1
-        createItemsetsOfSize1();
+    private void execute()
+    {        
+        Itemset.generateInitialItemset(); // create the initial itemset of size 1
+        
         int itemsetNumber = 1; //the current itemset being looked at
         int nbFrequentSets = 0;
 
-        while (itemsets.size() > 0) {
-
-            calculateFrequentItemsets();
-
-            if (itemsets.size() != 0) {
+        while (itemsets.size() > 0) 
+        {
+            Itemset.calculateFrequentItemsets();
+            if (itemsets.size() != 0) 
+            {
                 nbFrequentSets += itemsets.size();
-                createNewItemsetsFromPreviousOnes();
+                Itemset.createNewItemsetFromPrev();
             }
-
             itemsetNumber++;
-        }
-
-        Lister();
-    }
-
-    /**
-     * triggers actions if a frequent item set has been found
-     */
-    private void foundFrequentItemSet(int[] itemset, int support) {
-        String str1, str2;
-        str1 = Arrays.toString(itemset);
-        str2 = str1.substring(0, str1.length() - 1) + ", " + support + "]";
-        tupples.add(str2);
-        
-        str1 = Mapping.reverseMapping(str1);
-        GUI.resultTextArea.append(str1 + "\t(" + ((support / (double) numTransactions * 100)) + "% - " + support + ")\n");        
+        }        
+        runAssociation();
     }
     
     /**
-     * outputs a message in Sys.err if not used as library
+     * Iterate the itemset and apply the association rules
      */
-    private void log(String message) 
+    public static void runAssociation() 
     {
-        System.err.println(message);        
-    }
-
-    /**
-     * computes numItems, numTransactions, and sets minSup
-     */
-    private void configure() throws Exception 
-    {              
-        try
+        int tupple1size = tupples.size();
+        if (tupple1size == 0) 
         {
-            // going thourgh the file to compute numItems and  numTransactions
-            numItems = 0;
-            numTransactions = 0;
-            
-            BufferedReader data_in = new BufferedReader(new FileReader(transaFile));
-            
-            while (data_in.ready()) 
-            {
-                String line = data_in.readLine();
-                if (line.matches("\\s*")) 
-                    continue; // be friendly with empty lines
-
-                numTransactions++;
-
-                StringTokenizer t = new StringTokenizer(line, " ");
-
-                while (t.hasMoreTokens()) 
-                {
-                    int x = Integer.parseInt(t.nextToken());                        
-                    if (x + 1 > numItems) 
-                        numItems = x + 1;                        
-                }
-            }
-        }
-        catch(IOException ex)
-        {
-            
-        }
-    }
-
-    /**
-     * puts in itemsets all sets of size 1, i.e. all possibles items of the
-     * datasets
-     */
-    private void createItemsetsOfSize1() {
-        itemsets = new ArrayList<int[]>();
-        for (int i = 0; i < numItems; i++) {
-            int[] cand = {i};
-            itemsets.add(cand);
-        }
-    }
-    /**
-     * if m is the size of the current itemsets, generate all possible itemsets
-     * of size n+1 from pairs of current itemsets replaces the itemsets of
-     * itemsets by the new ones
-     */
-    private void createNewItemsetsFromPreviousOnes() {
-        // by construction, all existing itemsets have the same size
-        int currentSizeOfItemsets = itemsets.get(0).length;
-       
-        HashMap<String, int[]> tempCandidates = new HashMap<String, int[]>(); //temporary candidates
-
-        // compare each pair of itemsets of size n-1
-        for (int i = 0; i < itemsets.size(); i++) {
-            for (int j = i + 1; j < itemsets.size(); j++) {
-                int[] X = itemsets.get(i);
-                int[] Y = itemsets.get(j);
- 
-                assert (X.length == Y.length);
-
-                //make a string of the first n-2 tokens of the strings
-                int[] newCand = new int[currentSizeOfItemsets + 1];
-                for (int s = 0; s < newCand.length - 1; s++) {
-                    newCand[s] = X[s];
-                }
-
-                int ndifferent = 0;
-                // then we find the missing value
-                for (int s1 = 0; s1 < Y.length; s1++) {
-                    boolean found = false;
-                    // is Y[s1] in X?
-                    for (int s2 = 0; s2 < X.length; s2++) {
-                        if (X[s2] == Y[s1]) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) { // Y[s1] is not in X
-                        ndifferent++;
-                        // we put the missing value at the end of newCand
-                        newCand[newCand.length - 1] = Y[s1];
-                    }
-
-                }
-
-                // we have to find at least 1 different, otherwise it means that we have two times the same set in the existing candidates
-                assert (ndifferent > 0);
-
-                if (ndifferent == 1) {
-                    // HashMap does not have the correct "equals" for int[] :-(
-                    // I have to create the hash myself using a String :-(
-                    // I use Arrays.toString to reuse equals and hashcode of String
-                    Arrays.sort(newCand);
-                    tempCandidates.put(Arrays.toString(newCand), newCand);
-                }
-            }
-        }
-
-        //set the new itemsets
-        itemsets = new ArrayList<int[]>(tempCandidates.values());        
-    }
-
-    /**
-     * put "true" in trans[i] if the integer i is in line
-     */
-    private void line2booleanArray(String line, boolean[] trans) {
-        Arrays.fill(trans, false);
-        StringTokenizer stFile = new StringTokenizer(line, " "); //read a line from the file to the tokenizer
-        //put the contents of that line into the transaction array
-        while (stFile.hasMoreTokens()) {
-
-            int parsedVal = Integer.parseInt(stFile.nextToken());
-            trans[parsedVal] = true; //if it is not a 0, assign the value to true
-        }
-    }
-
-    /**
-     * passes through the data to measure the frequency of sets in
-     * {@link itemsets}, then filters thoses who are under the minimum support
-     * (minSup)
-     */
-    private void calculateFrequentItemsets() throws Exception 
-    {        
-        List<int[]> frequentCandidates = new ArrayList<>(); //the frequent candidates for the current itemset
-
-        boolean match; //whether the transaction has all the items in an itemset
-        int count[] = new int[itemsets.size()]; //the number of successful matches, initialized by zeros
-
-        BufferedReader data_in = new BufferedReader(new FileReader(transaFile));
-        while (data_in.ready()) 
-        {
-            boolean[] trans = new boolean[numItems];
-
-            // for each transaction
-            for (int i = 0; i < numTransactions; i++) 
-            {
-                // boolean[] trans = extractEncoding1(data_in.readLine());
-                String line = data_in.readLine();
-
-                line2booleanArray(line, trans);
-
-                // check each candidate
-                for (int c = 0; c < itemsets.size(); c++) {
-                    match = true; // reset match to false
-                    // tokenize the candidate so that we know what items need to be
-                    // present for a match
-                    int[] cand = itemsets.get(c);
-                    //int[] cand = candidatesOptimized[c];
-                    // check each item in the itemset to see if it is present in the
-                    // transaction
-                    for (int xx : cand) {
-                        if (trans[xx] == false) {
-                            match = false;
-                            break;
-                        }
-                    }
-                    if (match) { // if at this point it is a match, increase the count
-                        count[c]++;
-                        //log(Arrays.toString(cand)+" is contained in trans "+i+" ("+line+")");
-                    }
-                }
-            }
-        }
-        data_in.close();        
-
-        for (int i = 0; i < itemsets.size(); i++) 
-        {
-            // if the count% is larger than the minSup%, add to the candidate to
-            // the frequent candidates
-            if ((count[i] / (double) (numTransactions)) >= minSup) {
-                foundFrequentItemSet(itemsets.get(i), count[i]);
-                frequentCandidates.add(itemsets.get(i));
-            }
-            //else log("-- Remove candidate: "+ Arrays.toString(candidates.get(i)) + "  is: "+ ((count[i] / (double) numTransactions)));
-        }
-
-        //new candidates are only the frequent candidates
-        itemsets = frequentCandidates;
-    }
-
-    public static void Lister() {
-        int b = tupples.size();
-        if (b == 0) {
             System.exit(0);
+            System.out.println("ERROR - runAssociation - Tupple size is 0. App is exiting...");            
         }
-        int i,
-                j,
-                k = 0,
-                m = 0;
-        String newb = tupples.get(b - 1);
-        int a = ((newb.substring(1, newb.length() - 1).split(", ")).length);
-        int[][] lol = new int[b][a - 1];
-        int[] lols = new int[b];
-        for (i = 0; i < b; i++) {
-            newb = tupples.get(i);
-            String[] poop = newb.substring(1, newb.length() - 1).split(", ");
-            for (j = 0; j < poop.length - 1; j++) {
-                lol[i][j] = Integer.parseInt(poop[j]);
-            }
-            lols[i] = Integer.parseInt(poop[j]);
-            if ((j + 1) == a && k == 0) {
-                k = i;
-            }
-            poop = null;
+        
+        int index1, index2,k = 0,m = 0;        
+        String aTupple = tupples.get(tupple1size - 1);        
+        int tupple2size = ((aTupple.substring(1, aTupple.length() - 1).split(", ")).length);
+        
+        int[] array1 = new int[tupple1size];
+        int[][] array2 = new int[tupple1size][tupple2size - 1];        
+        
+        for (index1 = 0; index1 < tupple1size; index1++) 
+        {
+            aTupple = tupples.get(index1);
+            String[] candidate = aTupple.substring(1, aTupple.length() - 1).split(", ");
+            
+            for (index2 = 0; index2 < candidate.length - 1; index2++) 
+                array2[index1][index2] = Integer.parseInt(candidate[index2]);
+            
+            array1[index1] = Integer.parseInt(candidate[index2].replace(".0", ""));
+            
+            if ((index2 + 1) == tupple2size && k == 0) 
+                k = index1;
+            
+            candidate = null;
         }
-        GUI.associationTextArea.append("Association Rules - Minimum Confidence = " + minConf * 100 + "%\n");
-        for (i = k; i < b; i++) {
-            for (j = 0; j < k; j++) {
-                m += assoc_print(lol[i], lol[j], lols[i], lols[j]);
-            }
+        
+        GUI.associationTextArea.append("Association Rules - Minimum Confidence = " + CONFIDENCE * 100 + "%\n");
+        
+        for (index1 = k; index1 < tupple1size; index1++) 
+        {
+            for (index2 = 0; index2 < k; index2++) 
+                m += printAssociation(array2[index1], array2[index2], array1[index1], array1[index2]);
         }
-        if (m == 0) {
-            GUI.associationTextArea.append("No association rules passed the minimum confidence of " + minConf * 100 + "%\n");
-        }
+        
+        if (m == 0) 
+            GUI.associationTextArea.append("No association rules passed the minimum confidence of " + CONFIDENCE * 100 + "%\n");
     }
 
-    public static int assoc_print(int[] a, int[] b, int a1, int b1) {
-        String win = "[ ", lose = "[ ";
-        int i, j, k = 0;
-        int[] loss = new int[a.length];
+    /**
+     * Print the association
+     * @param a     tupple1
+     * @param b     tupple2
+     * @param a1    size 1
+     * @param b1    size 2
+     * @return 
+     */
+    public static int printAssociation(int[] tupple1, int[] tupple2, int tupple1size, int tupple2size) 
+    {
+        String yesValue = "[ ", noValue = "[ ";
+        int index1, index2, index = 0;
+        int[] loss = new int[tupple1.length];
         
-        for (i = 0; i < b.length && b[i] != 0; i++) 
+        for (index1 = 0; index1 < tupple2.length && tupple2[index1] != 0; index1++) 
         {
-            k = 1;
-            win = win + b[i] + " ";
-            for (j = 0; j < a.length; j++) 
+            index = 1;
+            yesValue = yesValue + tupple2[index1] + " ";
+            for (index2 = 0; index2 < tupple1.length; index2++) 
             {
-                if (b[i] == a[j]) 
+                if (tupple2[index1] == tupple1[index2]) 
                 {
-                    k = 0;
-                    loss[j] = 1;
+                    index = 0;
+                    loss[index2] = 1;
                 }
             }
         }
         
-        win = win.substring(0, win.length() - 1) + " ]";
-        for (i = 0; i < a.length; i++) 
+        yesValue = yesValue.substring(0, yesValue.length() - 1) + " ]";
+        for (index1 = 0; index1 < tupple1.length; index1++) 
         {
-            if (loss[i] == 0) 
+            if (loss[index1] == 0) 
             {
-                lose = lose + a[i] + " ";
+                noValue = noValue + tupple1[index1] + " ";
             }
         }
         
-        lose = lose.substring(0, lose.length() - 1) + " ]";
-        if (k == 0) 
+        noValue = noValue.substring(0, noValue.length() - 1) + " ]";
+        if (index == 0) 
         {
-            double Lol = (double) a1 / b1;
-            if (Lol > minConf) 
+            double currentConfidence = (double) tupple1size / tupple2size;
+            if (currentConfidence > CONFIDENCE) 
             {                
                 // TODO
-                win = Mapping.reverseMapping(win);
-                lose = Mapping.reverseMapping(lose);
+                yesValue = Mapping.reverseMapping(yesValue);
+                noValue = Mapping.reverseMapping(noValue);
                 
-                String output = String.format("%s ==> %s :	%.2f%c", win, lose, Lol * 100, 37);
+                String output = String.format("%s ==> %s 	%.2f%c", yesValue, noValue, currentConfidence * 100, 37);
 
                 GUI.associationTextArea.append(output + "\n");
                 
@@ -341,4 +166,5 @@ public class Apriori extends Observable {
         }
         return 0;
     }
+    
 }

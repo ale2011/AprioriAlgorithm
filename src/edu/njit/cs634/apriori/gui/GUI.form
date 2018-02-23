@@ -47,10 +47,11 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="jSeparator2" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
@@ -59,27 +60,27 @@
                               <EmptySpace min="-2" pref="512" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                  <Component id="dbRadio" alignment="0" max="32767" attributes="0"/>
                                   <Group type="102" attributes="0">
+                                      <EmptySpace min="21" pref="21" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="fileRadio" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
-                                          <Component id="dbRadio" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
+                                          <Component id="dbBttn" min="-2" pref="160" max="-2" attributes="0"/>
+                                          <Component id="browseBttn" min="-2" pref="160" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
-                                  <Component id="dbBttn" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="browseBttn" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="fileRadio" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="jScrollPane5" min="-2" pref="490" max="-2" attributes="0"/>
+                              <Component id="jScrollPane5" max="32767" attributes="0"/>
                           </Group>
                           <Component id="resetBttn" min="-2" pref="133" max="-2" attributes="0"/>
                           <Component id="jTabbedPane2" alignment="0" max="32767" attributes="0"/>
                       </Group>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
-                  <Component id="jSeparator2" alignment="1" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="jLabel1" alignment="1" pref="701" max="32767" attributes="0"/>
                           <Group type="102" alignment="1" attributes="0">
@@ -105,7 +106,7 @@
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jSeparator1" min="-2" pref="5" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <Component id="dbRadio" min="-2" max="-2" attributes="0"/>
@@ -119,8 +120,8 @@
                   <Component id="jScrollPane5" min="-2" pref="110" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="jSeparator3" min="-2" pref="8" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Component id="jSeparator3" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="inputSupport" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -129,7 +130,7 @@
                   <Component id="runBttn" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jSeparator2" min="-2" max="-2" attributes="0"/>
+              <Component id="jSeparator2" min="-2" pref="2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
               <Component id="jTabbedPane2" min="-2" pref="279" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
@@ -154,6 +155,7 @@
     <Component class="javax.swing.JButton" name="runBttn">
       <Properties>
         <Property name="text" type="java.lang.String" value="Run Apriori Algorithm"/>
+        <Property name="toolTipText" type="java.lang.String" value="Run the Apriori Algorithm"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runBttnActionPerformed"/>
@@ -167,6 +169,7 @@
     <Component class="javax.swing.JTextField" name="inputSupport">
       <Properties>
         <Property name="text" type="java.lang.String" value="0.3"/>
+        <Property name="toolTipText" type="java.lang.String" value="Ex: Enter 0.2 for 20%"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
@@ -177,6 +180,7 @@
     <Component class="javax.swing.JTextField" name="inputConfidence">
       <Properties>
         <Property name="text" type="java.lang.String" value="0.4"/>
+        <Property name="toolTipText" type="java.lang.String" value="Ex: Enter 0.2 for 20%"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="resetBttn">
@@ -393,6 +397,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="dbBttn">
       <Properties>
+        <Property name="toolTipText" type="java.lang.String" value="Connect and get all transactions from multiple databases"/>
         <Property name="label" type="java.lang.String" value="Load from Databases"/>
       </Properties>
       <Events>
@@ -402,6 +407,7 @@
     <Component class="javax.swing.JButton" name="browseBttn">
       <Properties>
         <Property name="text" type="java.lang.String" value="Browse..."/>
+        <Property name="toolTipText" type="java.lang.String" value="Browse transactions files"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>

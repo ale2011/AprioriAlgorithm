@@ -14,9 +14,10 @@ import java.util.logging.Logger;
 
 /**
  * DatabaseUtils.java
+ * This class contains methods that interact with the database
  * 
- * 
- * @author Admin
+ * @author Ashley Le
+ * @version 20180220
  */
 public class DatabaseUtils 
 {
@@ -93,7 +94,7 @@ public class DatabaseUtils
             GUI.fileDir.append("Processing transactions from alestore" + index + " database...");  
             GUI.transactionTextArea.append("Transactions from alestore" + index + " database: \n");
             
-            String [] trans = new String [10];            
+            String [] trans = new String [20];            
             int prevID = 0;
             
             while(resultSet.next())
@@ -125,7 +126,7 @@ public class DatabaseUtils
         }       
         
         connection.close();
-        GUI.fileDir.append("\nRetrieved all transactions from database.\n\nConnection is closed.\n\nClick Run Apriori Algorithm");     
+        GUI.fileDir.append("\nRetrieved all transactions from database.\n\nConnection is closed.\n\nEnter the Support and Confidence percentage and then click Run Apriori Algorithm to begin.");     
         
         for(int index = 0; index < transactions.size(); index++)
         {
