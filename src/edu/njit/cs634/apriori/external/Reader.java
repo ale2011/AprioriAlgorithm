@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package edu.njit.cs634.apriori.external;
 
 import edu.njit.cs634.apriori.gui.GUI;
@@ -18,13 +14,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
- * @author Admin
+ * Reader.java
+ * 
+ * The Reader class contains methods to read external text files that contains the 
+ * transactions. While reading the transactions, the Reader will combine transactions 
+ * from all of the external files into one single files for easy retrieval.
+ * 
+ * @author Ashley Le
+ * @version 20180222
  */
 public class Reader {
 
     public static File tmpFile;
     
+    /**
+     * Read multiple transactions Files and combine them into 1 
+     * @param files the array that contains the files
+     */
     public static void convertAndMergeFile(File[] files) 
     {
         String write = "";
@@ -58,6 +64,10 @@ public class Reader {
         }
     }
     
+    /**
+     * Write a string to the tempFile
+     * @param toWrite the string to be written
+     */
     public static void writeToTempFile(String toWrite)
     {
         try {
