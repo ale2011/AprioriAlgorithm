@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.njit.cs634.apriori.gui;
 
 import edu.njit.cs634.apriori.external.DatabaseUtils;
@@ -10,15 +5,20 @@ import edu.njit.cs634.apriori.external.Reader;
 import edu.njit.cs634.apriori.helper.Apriori;
 import java.awt.Component;
 import java.io.File;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * GUI.java
+ * The GUI class is the main class of the AAApp. 
+ * It contains codes that draw the user interface. 
+ * Additionally, it also has embeded actions (in codes) 
+ * to execute appropriate actions based on the mouse click.
+ * 
  * @author Ashley Le
+ * @version 20180222
  */
 public class GUI extends javax.swing.JFrame {
     
@@ -77,12 +77,15 @@ public class GUI extends javax.swing.JFrame {
         dbRadio = new javax.swing.JRadioButton();
         dbBttn = new javax.swing.JButton();
         browseBttn = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu2 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 3, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel1.setText("Apriori Algorithm");
+        jLabel1.setText("Ashley's Apriori Application (AAApp) ");
 
         runBttn.setText("Run Apriori Algorithm");
         runBttn.addActionListener(new java.awt.event.ActionListener() {
@@ -214,6 +217,20 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        jMenu2.setText("Info");
+
+        jMenuItem1.setText("About");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem1);
+
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -230,15 +247,15 @@ public class GUI extends javax.swing.JFrame {
                                 .addGap(512, 512, 512))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(fileRadio, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(dbRadio, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(21, 21, 21)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(dbBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(browseBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addGap(18, 18, 18)
-                                .addComponent(jScrollPane5))
+                                            .addComponent(fileRadio, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(dbRadio, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addComponent(dbBttn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(browseBttn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 490, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(resetBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jTabbedPane2, javax.swing.GroupLayout.Alignment.LEADING)))
                     .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -297,21 +314,32 @@ public class GUI extends javax.swing.JFrame {
 
     private void runBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runBttnActionPerformed
         try {
-            browseBttn.setEnabled(false);
-            runBttn.setEnabled(false);
-            inputSupport.setEnabled(false);
-            inputConfidence.setEnabled(false);
+            if(fileDir.getText().length() != 0)
+            {
+                browseBttn.setEnabled(false);
             
-            // Check for valid input
-            // only allow whole number from 0 to 100
-            SUPPORT = checkUserValues(inputSupport.getText());
-            CONFIDENCE = checkUserValues(inputConfidence.getText());
-                 
+                runBttn.setEnabled(false);
+                inputSupport.setEnabled(false);
+                inputConfidence.setEnabled(false);
+
+                // Check for valid input
+                // only allow whole number from 0 to 100
+                SUPPORT = checkUserValues(inputSupport.getText());
+                CONFIDENCE = checkUserValues(inputConfidence.getText());
+
+
+                if(fileRadio.isSelected())
+                    Reader.convertAndMergeFile(files);
+
+                Apriori apr = new Apriori(Reader.tmpFile, SUPPORT, CONFIDENCE);
+
+                JOptionPane.showMessageDialog(frame, "Completed!", "Complete!", JOptionPane.CLOSED_OPTION);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(frame, "You must select transactions data before running Appriori", "ERROR - Missing data", JOptionPane.ERROR_MESSAGE);
+            }
             
-            if(fileRadio.isSelected())
-                Reader.convertAndMergeFile(files);
-            
-            Apriori apr = new Apriori(Reader.tmpFile, SUPPORT, CONFIDENCE);
         } catch (Exception ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -371,6 +399,10 @@ public class GUI extends javax.swing.JFrame {
         
             DatabaseUtils db = new DatabaseUtils();
     }//GEN-LAST:event_dbBttnActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        JOptionPane.showMessageDialog(frame, "Ashley's Apriori Application (AAApp)\n\nName: Ashley Le\nUCID: al462\nClass: CS634 Distance Learning\nSpring 2018", "ABOUT", JOptionPane.CLOSED_OPTION);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
       
     /**
      * Check the user's input value
@@ -446,6 +478,9 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel6;
