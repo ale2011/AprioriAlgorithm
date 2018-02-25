@@ -14,23 +14,23 @@ import edu.njit.cs634.apriori.gui.GUI;
 public class Apriori
 {
     public static List<int[]> itemsets;    // list of current item set
-    public static File aFile;              // all transactions files
+    public static File aFile;              // transaction files
     public static int NUM_ITEMS;           // number of different items in the datasets
     public static int NUM_TRANSACTIONS;    // number of transactions in transactions files
     public static double SUPPORT;          // min support percentage
     public static double CONFIDENCE;       // min confidence percentage
     
-    public static List<String> tupples = new ArrayList< String>();    // stores the values from the frequent itemsets
+    public static List<String> tupples;   // stores the values from the frequent itemsets
 
     /**
      * Constructor
      * @param file  The file contains combined the transactions
      * @param support   minimum support percentage in decimal
      * @param confidence minimum confidence percentage in decimal
-     * @param b true if need to read text files. false if using the database
      */
     public Apriori(File file, double support, double confidence)
     {
+        tupples = new ArrayList< String>();
         aFile = file;               // set the file
         SUPPORT = support;          // set the support
         CONFIDENCE = confidence;    // set the confidence
@@ -38,6 +38,18 @@ public class Apriori
         Configurations.config(aFile);   // run the configuration
         
         execute();
+    }
+    
+    public static void reset()
+    {
+        aFile = null;               // set the file
+        SUPPORT = 0;          // set the support
+        CONFIDENCE = 0;  
+        NUM_ITEMS = 0;           // number of different items in the datasets
+        NUM_TRANSACTIONS = 0;
+        itemsets = null;
+        aFile = null;
+        tupples = new ArrayList< String>();
     }
 
     /**
@@ -112,10 +124,6 @@ public class Apriori
 
     /**
      * Print the association
-     * @param a     tupple1
-     * @param b     tupple2
-     * @param a1    size 1
-     * @param b1    size 2
      * @return 
      */
     public static int printAssociation(int[] tupple1, int[] tupple2, int tupple1size, int tupple2size) 

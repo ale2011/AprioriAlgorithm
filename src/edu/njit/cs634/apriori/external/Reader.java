@@ -23,23 +23,24 @@ import java.util.logging.Logger;
  */
 public class Reader 
 {
-    public static File tmpFile; // the temp file
+    public static File [] tmpFiles = new File[5];
     
     /**
      * Convert all text to its assigned integer number
      * @param files the array that contains all files
      */
-    public static void convertAndMergeFile(File[] files) 
+    public static void readInputFiles(File[] files) 
     {
         try 
         {
-            String write = "";
-        
+            int count = 0;
+            
             for (File file : files) 
             {
                 GUI.transactionTextArea.append("File: " + file.getAbsolutePath() + "\n");
                 
                 BufferedReader reader = new BufferedReader(new FileReader(file));
+                String write = "";
                 
                 while (reader.ready()) 
                 {
@@ -52,10 +53,11 @@ public class Reader
                 }                
                 GUI.transactionTextArea.append("\n");
                 reader.close();
+                
+                writeToTempFile(write, count);
+                
+                count++;
             }
-            
-            writeToTempFile(write);
-            
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Reader.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -67,11 +69,12 @@ public class Reader
      * Write the converted transactions (or any string) to the temp file
      * @param toWrite the string
      */
-    public static void writeToTempFile(String toWrite)
+    public static void writeToTempFile(String toWrite, int fileNumber)
     {
         try {
-            tmpFile = File.createTempFile("mergedTransactions", ".tmp");
-            BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFile));
+            
+            tmpFiles[fileNumber] = File.createTempFile("myTrans", ".tmp");
+            BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFiles[fileNumber]));
             bw.write(toWrite);
             bw.close();
         } catch (IOException ex) {

@@ -1,7 +1,4 @@
 package edu.njit.cs634.apriori.helper;
-
-import java.util.ArrayList;
-
 /**
  * Mapping.java
  * This class map the items to an associating integer
@@ -23,9 +20,7 @@ public class Mapping
      * 8 = icecream
      * 9 = popsicle
      * 10 = sneakers 
-     * 
-     *****************/        
-    
+     *****************/   
     
     /**
      * Convert line with transactions in words to integer

@@ -52,6 +52,8 @@ public class Itemset
             int count[] = new int[Apriori.itemsets.size()]; //the number of successful matches
             boolean match = false;  // True if the transaction has all the items in an itemset
             
+            System.out.println(Apriori.aFile);
+            
             BufferedReader reader = new BufferedReader(new FileReader(Apriori.aFile ));
             
             // read the file 
@@ -65,6 +67,10 @@ public class Itemset
                     // boolean[] trans = extractEncoding1(data_in.readLine());
                     String line = reader.readLine();
                     
+                    // if this is an empty line
+                    if (line.matches("\\s*")) 
+                        continue; // skip the rest and continue on.
+
                     convertToBooleanArray(line, bTransactions);
                     
                     // check each candidate

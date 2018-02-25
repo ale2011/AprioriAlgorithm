@@ -30,7 +30,6 @@ public class DatabaseUtils
     public Statement statement;
     public PreparedStatement prep_statement;
     public ResultSet resultSet;
-    public String toTempFile;
     
     public ArrayList <String []> transactions = new ArrayList <String []> ();
     
@@ -82,6 +81,7 @@ public class DatabaseUtils
     {
         for(int index = 1; index <= 5; index++)
         {
+            String toTempFile = "";
             String query = "SELECT alestore" + index + ".transactions.idtransactions, alestore" + index + ".items.description \n" +
                                 "FROM alestore" + index + ".items, alestore" + index + ".transactions \n" +
                                 "WHERE alestore" + index + ".items.iditems = alestore" + index + ".transactions.purchased_item\n" +
@@ -122,22 +122,20 @@ public class DatabaseUtils
             GUI.transactionTextArea.append("\n");
             
             transactions.add(trans);
-            GUI.fileDir.append(" Completed!\n");               
-        }       
+            GUI.fileDir.append(" Completed!\n"); 
+            
+            for(String items : trans)
+            {
+                toTempFile += items + "\n";
+            }
+            
+            toTempFile = toTempFile.replace("null", "");
+            toTempFile = Mapping.getLineMapping(toTempFile);
+            Reader.writeToTempFile(toTempFile, index-1);
+        }      
         
         connection.close();
         GUI.fileDir.append("\nRetrieved all transactions from database.\n\nConnection is closed.\n\nEnter the Support and Confidence percentage and then click Run Apriori Algorithm to begin.");     
         
-        for(int index = 0; index < transactions.size(); index++)
-        {
-            for(String str : transactions.get(index))
-            {
-                toTempFile += str + "\n";
-            }
-        }
-        
-        toTempFile = toTempFile.replace("null", "");
-        toTempFile = Mapping.getLineMapping(toTempFile);
-        Reader.writeToTempFile(toTempFile);
     }
 }

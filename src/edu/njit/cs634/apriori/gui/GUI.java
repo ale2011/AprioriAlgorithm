@@ -106,8 +106,10 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        transactionTextArea.setEditable(false);
         transactionTextArea.setColumns(20);
         transactionTextArea.setRows(5);
+        transactionTextArea.setAutoscrolls(false);
         jScrollPane3.setViewportView(transactionTextArea);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -129,8 +131,10 @@ public class GUI extends javax.swing.JFrame {
 
         jTabbedPane2.addTab("Transactions Listing", jPanel4);
 
+        resultTextArea.setEditable(false);
         resultTextArea.setColumns(20);
         resultTextArea.setRows(5);
+        resultTextArea.setAutoscrolls(false);
         jScrollPane1.setViewportView(resultTextArea);
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
@@ -152,8 +156,10 @@ public class GUI extends javax.swing.JFrame {
 
         jTabbedPane2.addTab("Apriori Itemsets", jPanel6);
 
+        associationTextArea.setEditable(false);
         associationTextArea.setColumns(20);
         associationTextArea.setRows(5);
+        associationTextArea.setAutoscrolls(false);
         jScrollPane4.setViewportView(associationTextArea);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -333,9 +339,19 @@ public class GUI extends javax.swing.JFrame {
                 CONFIDENCE = checkUserValues(inputConfidence.getText());
 
                 if(fileRadio.isSelected())
-                    Reader.convertAndMergeFile(files);
+                    Reader.readInputFiles(files);
 
-                Apriori apr = new Apriori(Reader.tmpFile, SUPPORT, CONFIDENCE);     
+                for(int index = 0; index < Reader.tmpFiles.length; index++)
+                {
+                    resultTextArea.append("Results from file/database #" + (index+1) + ": \n");
+                    associationTextArea.append("Results from file/database #" + (index+1) + ": \n");
+                    
+                    Apriori apr = new Apriori(Reader.tmpFiles[index], SUPPORT, CONFIDENCE);     
+                    
+                    resultTextArea.append("\n====== END ====== \n\n");
+                    associationTextArea.append("\n====== END ====== \n\n");
+                }
+                
                 JOptionPane.showMessageDialog(frame, "Complete!", "Complete!", JOptionPane.OK_CANCEL_OPTION);
             }
             else
@@ -367,7 +383,8 @@ public class GUI extends javax.swing.JFrame {
         resultTextArea.setText("");
         associationTextArea.setText("");
         
-        Reader.tmpFile.delete();
+        Reader.tmpFiles = new File[5];
+        Apriori.reset();        
     }//GEN-LAST:event_resetBttnActionPerformed
 
     /**
